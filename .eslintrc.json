@@ -1,0 +1,25 @@
+{
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "plugins": ["@typescript-eslint"],
+  "ignorePatterns": [
+    "node_modules/"
+  ],
+  "rules": {
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error"],
+    "import/no-unresolved": "error",
+    "quotes": ["error", "single"],
+    "@typescript-eslint/naming-convention": [
+      "warn",
+      {
+        "selector": "variableLike",
+        "format": ["camelCase", "PascalCase", "snake_case", "UPPER_CASE"],
+        "leadingUnderscore": "allow"
+      }
+    ],
+    "no-trailing-spaces": ["error", { "skipBlankLines": true }],
+    "@typescript-eslint/no-use-before-define": [
+      "error"
+    ]
+  }
+}
