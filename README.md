@@ -1,37 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DEEPTRACK
 
-## Getting Started
+DeepTrack is an innovative project dedicated to safeguarding your digital integrity. By leveraging cutting-edge AI technologies, DeepTrack provides solutions that ensure the authenticity, security, and trustworthiness of digital content.
 
-First, run the development server:
+## Project Overview
+DeepTrack aims to combat challenges in digital integrity by providing tools for authentication, monitoring, and protection across various digital mediums. Whether you’re dealing with image verification, audio authentication, or text detection, DeepTrack has you covered.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Features
+- **Image Authentication**: Detect and verify the authenticity of images.
+- **Audio Authentication**: Ensure audio integrity and prevent tampering.
+- **Text Detection**: Identify and extract textual information from digital sources.
+- **Media Protection**: Safeguard sensitive media content from unauthorized access.
+- **Event Tracking**: Monitor digital events and provide secure logs.
+- **Finance Use Case**: Protect sensitive financial data and transactions.
+- **Government Use Case**: Ensure the integrity of critical government digital assets.
+
+## Folder Structure
+Below is an overview of the project’s folder structure:
+
+```
+DeepTrack/
+├── app/
+│   ├── api/
+│   ├── audio-authentication/
+│   ├── events/
+│   ├── finance-use-case/
+│   ├── fonts/
+│   ├── globals.css
+│   ├── government-use-case/
+│   ├── image-authentication/
+│   ├── layout.tsx
+│   ├── media-use-case/
+│   ├── page.tsx
+│   ├── text-detection/
+│   └── webinar-registration/
+├── components/
+│   ├── aos.tsx
+│   ├── cards/
+│   ├── cookie-banner.tsx
+│   ├── google-analytics.tsx
+│   ├── landing-page/
+│   ├── layout/
+│   └── ui/
+├── data/
+├── lib/
+├── prisma/
+├── public/
+├── node_modules/
+├── tailwind.config.ts
+├── tsconfig.json
+└── README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Key Folders
+- **app/**: Contains the main application logic and use-case implementations.
+- **components/**: Houses reusable UI components like banners, cards, and layouts.
+- **data/**: Stores static data or configuration files.
+- **lib/**: Includes helper libraries and utilities.
+- **prisma/**: Manages database schemas and migrations.
+- **public/**: Contains static assets like images and documents.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Installation
+Follow these steps to set up the project locally:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-repo/deeptrack.git
+   ```
 
-## Learn More
+2. Navigate to the project directory:
+   ```bash
+   cd deeptrack
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+3. Install dependencies:
+   ```bash
+   pnpm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. Start the development server:
+   ```bash
+   pnpm dev
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+5. Open your browser and navigate to `http://localhost:3000`.
 
-## Deploy on Vercel
+## Tech Stack
+- **Framework**: Next.js
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **State Management**: Redux
+- **Database**: Prisma
+- **Authentication**: Firebase
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contributing
+We welcome contributions from the community! If you’d like to contribute:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# captur-website
+1. Fork the repository.
+2. Create a feature branch.
+3. Commit your changes and open a pull request.
+
+## License
+This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+## Contact
+For questions or support, reach out to the DeepTrack team at support@deeptrack.ai.
+
+---
+
+**DeepTrack** – Safeguarding Digital Integrity.
+
