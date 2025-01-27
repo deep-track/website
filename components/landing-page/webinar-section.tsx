@@ -8,7 +8,7 @@ import { ArrowRight } from 'lucide-react'
 const webinarData = [
     {
         id: 1,
-        title: 'Jan 29 Live Webinar: Enhancing Fraud Prevention in the Age of AI',
+        title: '29th Jan - 5th Feb Live Webinar: Enhancing Fraud Prevention in the Age of AI',
         learnmore: '/webinar-registration',
     },
 ]
