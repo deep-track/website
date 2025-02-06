@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Navigation } from './navigation';
 import Image from 'next/image';
 import { NavbarSheet } from './navbar-sheet';
+import { Button } from '../ui/button';
 
 export function Navbar() {
   return (
@@ -24,8 +25,6 @@ export function Navbar() {
               <Navigation />
             </div>
           </div>
-
-
           <div className="-mr-2 flex md:hidden">
             <NavbarSheet />
           </div>
