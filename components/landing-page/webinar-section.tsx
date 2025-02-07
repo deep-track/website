@@ -26,7 +26,7 @@ const WebinarSection = () => {
 
     return (
         <section className="px-4 sm:px-6 lg:px-8 py-4 bg-card relative overflow-hidden z-0">
-            {/* <div className="max-w-3xl mx-auto relative">
+            <div className="max-w-3xl mx-auto relative">
             <AnimatePresence mode="wait">
                 <motion.h2
                 key={currentIndex}
@@ -43,7 +43,7 @@ const WebinarSection = () => {
                     </Link>
                 </motion.h2>
             </AnimatePresence>
-            </div> */}
+            </div>
         </section>
     )
 }

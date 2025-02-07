@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { Navigation } from './navigation';
 import Image from 'next/image';
 import { NavbarSheet } from './navbar-sheet';
-import { Button } from '../ui/button';
 
 export function Navbar() {
   return (
