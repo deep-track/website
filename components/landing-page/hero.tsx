@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react'
 import HeroSvg from './svg'
@@ -15,7 +15,7 @@ export default function Hero() {
       // download whitepaper pdf implementation
       const localLink = document.createElement('a');
       localLink.href = localFileUrl;
-      localLink.setAttribute("download", "white-paper.pdf");
+      localLink.setAttribute('download', 'white-paper.pdf');
       document.body.appendChild(localLink);
       localLink.click();
       document.body.removeChild(localLink);
@@ -39,7 +39,7 @@ export default function Hero() {
               onClick={handleDownload}
               className="bg-blue-500 text-white px-4 py-4 mt-2 rounded-lg hover:bg-blue-600 transition"
             >
-              Download WhitePaper    
+              Download WhitePaper
             </Button>
             </div>
         </div>
