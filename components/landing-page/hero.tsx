@@ -5,6 +5,7 @@ import HeroSvg from './svg'
 import { FlipWords } from '../ui/flip-words'
 import { WaitlistButton } from './waiting-list';
 import { Button } from '../ui/button';
+import { toast } from 'sonner';
 
 export default function Hero() {
     const words = ['Deepfakes','Generated Text', 'Voice Spoofing', 'Disinformation', 'Fraud'];
@@ -19,6 +20,7 @@ export default function Hero() {
       document.body.appendChild(localLink);
       localLink.click();
       document.body.removeChild(localLink);
+      toast.success('Whitepaper downloaded successfully');
 
     }
   
