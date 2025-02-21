@@ -8,6 +8,7 @@ import { Navbar } from '@/components/landing-page/navbar'
 import BlogFeatureSection from '@/components/layout/BlogFeatureSection'
 import ExploreSection from '@/components/layout/Explore'
 import WebinarSection from '@/components/landing-page/webinar-section';
+import BlogBanner from '@/components/layout/BlogBanner';
 
 const Events = () => {
   return (
@@ -25,10 +26,10 @@ const Events = () => {
                 height={300}
                 className="absolute -right-72  md:-right-10 -z-10 customTeal"
               />
-        {/* <BlogBanner/> */}
-        <div className="flex items-center justify-center rounded-lg">
+        <BlogBanner/>
+        {/* <div className="flex items-center justify-center rounded-lg">
           <p className="text-gray-500">No Blogs Yet</p>
-        </div>
+        </div> */}
         {/* <WebinarInfoSection /> */}
         <div>
                 <ExploreSection

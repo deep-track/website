@@ -7,37 +7,13 @@ import { MdArrowRight } from 'react-icons/md';
 
 const features = [
     {
-        title: 'CYBERSECURITY',
+        title: 'The State of AI Fraud Should Alarm Every Enterprise Leader',
         description:
-            'Sophisticated AI-generated text forgeries are becoming increasingly prevalent, creating significant risks for businesses and individuals alike. Deeptrack\'s cutting-edge AI text detection.',
-        image: '/deeptrack-blog-1.png',
-        link: '#',
-        category: 'CYBERSECURITY'
-    },
-    {
-        title: 'KYC SECURITY',
-        description:
-            'Sophisticated AI-generated text forgeries are becoming increasingly prevalent, creating significant risks for businesses and individuals alike. Deeptrack\'s cutting-edge AI text detection.',
-        image: '/deeptrack-blog-2.png',
+            'Over the past few years, we have seen a drastic rise in the field of AI. Different companies all rallying to see who will emerge to be a superior in this race.',
+        image: '/blogs/article-1.png',
         link: '#',
         category: 'KYC SECURITY'
-    },
-    {
-        title: 'MEDIA VERIFICATION',
-        description:
-            'Sophisticated AI-generated text forgeries are becoming increasingly prevalent, creating significant risks for businesses and individuals alike. Deeptrack\'s cutting-edge AI text detection.',
-        image: '/deeptrack-blog-3.png',
-        link: '#',
-        category: 'MEDIA VERIFICATION'
-    },
-    {
-        title: 'THREAT INTELLIGENCE',
-        description:
-            'Sophisticated AI-generated text forgeries are becoming increasingly prevalent, creating significant risks for businesses and individuals alike. Deeptrack\'s cutting-edge AI text detection.',
-        image: '/deeptrack-blog-4.png',
-        link: '#',
-        category: 'THREAT INTELLIGENCE'
-    },
+    }
 ];
 
 const categories = [
@@ -86,13 +62,13 @@ const BlogBanner: React.FC = () => {
                                 <Image
                                     src={feature.image}
                                     alt={feature.title}
-                                    layout="fill"
-                                    objectFit="cover"
+                                    fill
+                                    style={{"objectFit": "cover"}}
                                     className="rounded-md"
                                 />
                             </div>
                             <h3 className="text-lg text-customTeal font-semibold mb-2">{feature.title}</h3>
-                            <p className="text-sm text-gray-400 mb-4">
+                            <p className="text-sm text-gray-400 mb-4 truncate">
                                 {feature.description}
                             </p>
                             <a
