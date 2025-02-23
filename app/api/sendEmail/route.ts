@@ -52,7 +52,7 @@ export async function POST(req: Request) {
             <ul>
                 <li>Saruni Maina - Associate VP, Stablecoins Segment</li>
                 <li>Bryan Koyundi - CEO at DeepTrack</li>
-                <li>Regan Muthomi - Tech Lead at DeepTrack</li>
+                <li>Harmaton Njagi - Tech Lead at DeepTrack</li>
             </ul>
             <p>We can't wait to host you and dive into this critical conversation. We encourage you to add this event to your calendar.</p>
             <p>If you have any questions ahead of the event, feel free to reach out on our <a href="https://x.com/deeptrck">X(formerly Twitter)</a> or email: marketing@deeptrack.io.</p>
