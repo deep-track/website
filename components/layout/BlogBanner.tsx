@@ -3,17 +3,18 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { MdArrowRight } from 'react-icons/md';
+import { features } from '@/data/blogs';
 
-const features = [
+/*const features = [
     {
         title: 'The State of AI Fraud Should Alarm Every Enterprise Leader',
         description:
             'Over the past few years, we have seen a drastic rise in the field of AI. Different companies all rallying to see who will emerge to be a superior in this race.',
         image: '/blogs/article-1.png',
-        link: '#',
+        link: '/events/displayBlog',//made the changes her to do the linking
         category: 'KYC SECURITY'
     }
-];
+];*/
 
 const categories = [
     'ALL',
