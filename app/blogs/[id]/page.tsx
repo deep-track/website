@@ -5,6 +5,7 @@ import Footer from '@/components/landing-page/footer';
 import ExtraSection from '@/components/landing-page/extra-section';
 import WebinarSection from '@/components/landing-page/webinar-section';
 import TheStateOfAI from '@/components/blogsBody/theStateOfAI';
+import BlogBanner from '@/components/layout/BlogBanner';
 
 const DisplayBlog = () => {
   return<>

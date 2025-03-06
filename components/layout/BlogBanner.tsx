@@ -1,20 +1,10 @@
-'use client'
+"use client";  // Ensure this is a client component
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { MdArrowRight } from 'react-icons/md';
 import { features } from '@/data/blogs';
-
-/*const features = [
-    {
-        title: 'The State of AI Fraud Should Alarm Every Enterprise Leader',
-        description:
-            'Over the past few years, we have seen a drastic rise in the field of AI. Different companies all rallying to see who will emerge to be a superior in this race.',
-        image: '/blogs/article-1.png',
-        link: '/events/displayBlog',//made the changes her to do the linking
-        category: 'KYC SECURITY'
-    }
-];*/
 
 const categories = [
     'ALL',
@@ -56,10 +46,10 @@ const BlogBanner: React.FC = () => {
 
                 {/* Blog Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredFeatures.map((feature, index) => (
+                    {filteredFeatures.map((feature, id) => (
                         <div
                             data-aos="fade-in"
-                            key={index}
+                            key={id}
                             className="bg-primary rounded-2xl shadow-md overflow-hidden transition-transform transform hover:-translate-y-1 hover:shadow-lg"
                         >
                             <div className="relative w-full h-56">
@@ -80,12 +70,14 @@ const BlogBanner: React.FC = () => {
                                 <p className="text-sm text-gray-500 mb-4 line-clamp-3">
                                     {feature.description}
                                 </p>
-                                <a
-                                    href={feature.link}
+                                
+                                {/* Use Next.js <Link> to pass the blog ID */}
+                                <Link
+                                    href={`/blogs/${id}`}
                                     className="text-customTeal flex items-center mt-auto font-medium hover:underline"
                                 >
                                     Read <MdArrowRight size={20} className="ml-1" />
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     ))}
