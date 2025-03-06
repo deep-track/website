@@ -1,7 +1,7 @@
 import React from "react";
 import { FaRegClock } from "react-icons/fa"; // Importing the clock icon from Font Awesome
-import SocialIcons from "./veticalIcons"; // Assuming the SocialIcons component is in the same directory
-import NameCard from "./nameCard"; // Importing the NameCard component
+import SocialIcons from "../layout/veticalIcons"; // Assuming the SocialIcons component is in the same directory
+import NameCard from "../ui/nameCard"; // Importing the NameCard component
 
 const TheStateOfAI: React.FC = () => {
   return (
