@@ -1,8 +1,7 @@
-import React from "react";
+import React from 'react';
 import { FaRegClock } from 'react-icons/fa'; // Importing the clock icon from Font Awesome
 import SocialIcons from '../layout/veticalIcons'; // Assuming the SocialIcons component is in the same directory
-import NameCard from '../ui/nameCard'; 
-
+import NameCard from '../ui/nameCard';
 const TheStateOfAI: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto p-8 bg-black text-white rounded-lg shadow-lg font-outfit">
