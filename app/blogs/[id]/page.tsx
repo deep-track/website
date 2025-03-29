@@ -1,11 +1,10 @@
-"use client";
+'use client';
 import React from 'react';
 import {Navbar} from '@/components/landing-page/navbar';
 import Footer from '@/components/landing-page/footer';
 import ExtraSection from '@/components/landing-page/extra-section';
 import WebinarSection from '@/components/landing-page/webinar-section';
 import TheStateOfAI from '@/components/blogsBody/theStateOfAI';
-import BlogBanner from '@/components/layout/BlogBanner';
 
 const DisplayBlog = () => {
   return<>

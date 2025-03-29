@@ -5,10 +5,10 @@ const SocialIcons = () => {
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href)
       .then(() => {
-        alert("Link copied to clipboard!");
+        alert('Link copied to clipboard!');
       })
       .catch(err => {
-        alert("Failed to copy the link");
+        alert(err);
       });
   };
 
