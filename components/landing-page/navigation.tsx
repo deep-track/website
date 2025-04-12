@@ -41,12 +41,13 @@ const ListItem = React.forwardRef<
 ListItem.displayName = 'ListItem'
 
 const components: { title: string; href: string; description: string }[] = [
-  {
-    title: 'Government Use Case',
-    href: '/government-use-case',
-    description:
-      'Real-time KYC checks and fraud detection for a secure onboarding process.',
-  },
+  //pulled down till further notice
+  // {
+  //   title: 'Government Use Case',
+  //   href: '/government-use-case',
+  //   description:
+  //     'Real-time KYC checks and fraud detection for a secure onboarding process.',
+  // },
   {
     title: 'Media Use Case',
     href: '/media-use-case',
@@ -80,7 +81,7 @@ export function Navigation() {
                       <Image src={'/logos/deeptrack-high-resolution-logo-black-transparent.png'} width={200} height={50} alt="Logo" />
                     </div>
                     <p className="text-sm leading-tight text-muted-foreground">
-                      Use AI to detect deepfakes. DeepTrack is model agnostic
+                      Use AI to detect deepfakes. deeptrack is model agnostic
                     </p>
                   </Link>
                 </NavigationMenuLink>
@@ -112,7 +113,7 @@ export function Navigation() {
                       <Image src={'/logos/deeptrack-high-resolution-logo-black-transparent.png'} width={200} height={50} alt="Logo" />
                     </div>
                     <p className="text-sm leading-tight text-muted-foreground">
-                      Use AI to detect deepfakes. DeepTrack is model agnostic
+                      Use AI to detect deepfakes. deeptrack is model agnostic
                     </p>
                   </Link>
                 </NavigationMenuLink>
