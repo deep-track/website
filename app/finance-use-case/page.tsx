@@ -25,7 +25,7 @@ const features = [
 const FinanceUseCase = () => {
   return (
       <div className='space-y-6'>
-          <WebinarSection />
+          {/* <WebinarSection /> will be added later*/}
           <Navbar />
           <FinanceUseCaseFeatureSection
               useCase='Finance'

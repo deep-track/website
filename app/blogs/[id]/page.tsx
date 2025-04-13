@@ -8,7 +8,7 @@ import TheStateOfAI from '@/components/blogsBody/theStateOfAI';
 
 const DisplayBlog = () => {
   return<>
-  <WebinarSection/>
+  {/* <WebinarSection/> will be added later on */}
   <Navbar/>
   <TheStateOfAI/>
   <ExtraSection/>

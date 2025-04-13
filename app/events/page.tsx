@@ -13,7 +13,7 @@ import BlogBanner from '@/components/layout/BlogBanner';
 const Events = () => {
   return (
       <div className="space-y-6">
-      <WebinarSection />
+      {/* <WebinarSection /> will be added later*/}
         <Navbar />
         <BlogFeatureSection
               title='Blog & Events'

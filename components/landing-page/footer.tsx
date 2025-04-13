@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Linkedin, Twitter } from 'lucide-react';
+import TalkDataSection from './talkDataSection';
 
 
 export default function Footer() {
@@ -13,6 +14,10 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-6">Solutions</h3>
             <nav className="flex flex-col space-y-4">
+              {/* added the dropdown of the talk data section */}
+              <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+                <TalkDataSection/>
+              </Link>
               <Link href="/image-authentication" className="text-gray-400 hover:text-white transition-colors">
                 Image Authentication
               </Link>
@@ -25,6 +30,7 @@ export default function Footer() {
               <Link href="#" className="text-gray-400 hover:text-white transition-colors">
                 Disinformation
               </Link>
+              
             </nav>
           </div>
 
@@ -61,7 +67,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-gray-800">
           <p className="text-gray-400 text-sm mb-4 md:mb-0">
-            © 2024 All Rights Reserved
+            © 2025 All Rights Reserved
           </p>
 
           {/* Social Media Icons */}
