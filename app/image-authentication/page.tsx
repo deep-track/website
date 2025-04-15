@@ -15,7 +15,7 @@ import WebinarSection from '@/components/landing-page/webinar-section';
 const ImageAuthenticationPage = () => {
   return (
     <div className="space-y-6">
-      <WebinarSection />
+      {/* <WebinarSection /> */}
       <Navbar />
       <FeatureSection
         title="Image Authentication"

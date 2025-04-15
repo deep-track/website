@@ -14,7 +14,7 @@ import WebinarSection from '@/components/landing-page/webinar-section'
 const AudioAuthenticationPage = () => {
   return (
       <div className="space-y-6">
-          <WebinarSection />
+          {/* <WebinarSection /> */}
           <Navbar />
           <AudioFeatureSection
               title="Audio Authentication"

@@ -13,7 +13,7 @@ import WebinarSection from '@/components/landing-page/webinar-section';
 const TextDetection = () => {
   return (
       <div className="space-y-6">
-          <WebinarSection />
+          {/* <WebinarSection /> */}
           <Navbar />
           <TextAuthenticationFeatureSection
               title="Text Detection"
