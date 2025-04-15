@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     icon: '/deeptrack-favicon.ico',
   },
   metadataBase: new URL('https://deeptrack.io/deeptrackOG.png'),
-  title: 'DeepTrack',
+  title: 'deeptrack',
   description: 'deeptrack™ is an advanced deepfake detection solution designed for media outlets, financial institutions, and government agencies.',
   openGraph: {
     images: '/deeptrackOG.png',

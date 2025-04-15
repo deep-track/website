@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Linkedin, Twitter } from 'lucide-react';
-import TalkDataSection from './talkDataSection';
+
 
 
 export default function Footer() {
@@ -9,15 +9,11 @@ export default function Footer() {
     <footer className="bg-black text-white py-16">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         {/* Navigation Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           {/* Solutions Column */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-6">Solutions</h3>
             <nav className="flex flex-col space-y-4">
-              {/* added the dropdown of the talk data section */}
-              <Link href="#" className="text-gray-400 hover:text-white transition-colors">
-                <TalkDataSection/>
-              </Link>
               <Link href="/image-authentication" className="text-gray-400 hover:text-white transition-colors">
                 Image Authentication
               </Link>
@@ -25,7 +21,7 @@ export default function Footer() {
                 Audio Authentication
               </Link>
               <Link href="/text-detection" className="text-gray-400 hover:text-white transition-colors">
-                Text Detection
+                Realtime Fact Checking
               </Link>
               <Link href="#" className="text-gray-400 hover:text-white transition-colors">
                 Disinformation
@@ -59,6 +55,28 @@ export default function Footer() {
               </Link>
               <Link href="#" className="text-gray-400 hover:text-white transition-colors">
                 FAQs
+              </Link>
+            </nav>
+          </div>
+
+          {/*Compliance Framework column */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold mb-6">Privacy & Compliance</h3>
+            <nav className="flex flex-col space-y-4">
+              <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+                SOC2 Compliance
+              </Link>
+              <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+                GDPR
+              </Link>
+              <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+              Kenya Data Protection
+              </Link>
+              <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+              Compute on Device
+              </Link>
+              <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+              Privacy Secure
               </Link>
             </nav>
           </div>

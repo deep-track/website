@@ -61,6 +61,7 @@ const FinanceUseCase = () => {
               subtitle='Instant Document and Audio Analysis'
               description="DeepTrack applies advanced AI models to validate customer-submitted documents and voice-based verifications instantly. Detecting fraudulent documents, mismatched audio, and synthetic identities in real time ensures a smooth and secure onboarding experience."
           />
+          
           <Image
                         src="/Vector.svg"
                         alt="Blue Lines"
