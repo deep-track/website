@@ -8,12 +8,12 @@ const solutionData = [
     description: 'Strengthen your organization\'s defenses against financial threats. Seamlessly review flagged transactions and automate KYC (Know Your Customer) processes to detect fraud faster. Generate detailed compliance reports that meet regulatory standards, ensuring trust and security in your operations.',
     learnMoreUrl: '/finance-use-case'
   },
-  {
-    id: 2,
-    title: 'Government',
-    description: 'Lead the fight against misinformation with advanced tools to identify and thwart campaigns that threaten public discourse. Validate evidence with precision to support informed decision-making and uphold transparency.',
-    learnMoreUrl: '/government-use-case'
-  },
+  // {
+  //   id: 2,
+  //   title: 'Government',
+  //   description: 'Lead the fight against misinformation with advanced tools to identify and thwart campaigns that threaten public discourse. Validate evidence with precision to support informed decision-making and uphold transparency.',
+  //   learnMoreUrl: '/government-use-case'
+  // },
   {
     id: 3,
     title: 'Media',
