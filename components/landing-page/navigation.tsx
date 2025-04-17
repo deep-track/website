@@ -165,10 +165,10 @@ export function Navigation() {
                   </Link>
                 </NavigationMenuLink>
               </li>
-              <ListItem href="/image-authentication" title="Pitch deck">
+              <ListItem href="#" title="Pitch deck">
                 Download pitch deck document
               </ListItem>
-              <ListItem href="/audio-authentication" title="Cap Table">
+              <ListItem href="#" title="Cap Table">
                 Download the Cap Table
               </ListItem>
             </ul>

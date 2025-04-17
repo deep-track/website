@@ -53,7 +53,7 @@ export function NavbarSheet() {
         <DropdownMenuContent>
             <DropdownMenuLabel>Our Use Cases</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>  <Link href='/government-use-case'>Government Use Case</Link></DropdownMenuItem>
+            {/* <DropdownMenuItem>  <Link href='/government-use-case'>Government Use Case</Link></DropdownMenuItem> */}
             <DropdownMenuItem><Link href='/media-use-case'> Media Use Case</Link></DropdownMenuItem>
             <DropdownMenuItem><Link href='/finance-use-case'>Finance Use Case</Link></DropdownMenuItem>
         </DropdownMenuContent>
@@ -61,6 +61,16 @@ export function NavbarSheet() {
 
         <Link href='#'>Support</Link>
         <Link href='/events'>Blogs and Events</Link>
+        {/* Added the investor relations */}
+        <DropdownMenu>
+        <DropdownMenuTrigger className="flex items-center space-x-2 "><span>Investor Relations </span> <ChevronDown className="h-4 w-4" /> </DropdownMenuTrigger>
+        <DropdownMenuContent>
+            <DropdownMenuLabel>Investor Relations</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>  <Link href='#'>Download Pitch Deck Document</Link></DropdownMenuItem>
+            <DropdownMenuItem><Link href='#'> Download Cap Table Document</Link></DropdownMenuItem>
+        </DropdownMenuContent>
+        </DropdownMenu>
         </div>
 
         <SheetFooter className="">
