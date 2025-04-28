@@ -15,7 +15,8 @@ export async function GET(req: Request): Promise<Response> {
   }
 
   const token = uuidv4()
-  const expiresAt = Date.now() + 3 * 60 * 1000 // 3 minutes
+  const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
 
   try {
     // Store token and expiry in Firebase Realtime Database
@@ -30,12 +31,12 @@ export async function GET(req: Request): Promise<Response> {
     await resend.emails.send({
       from: 'Document Access <onboarding@resend.dev>',
       to: email,
-      subject: '✅ Access Granted - Your Document is Ready',
+      subject: '✅ Access Granted from deeptrack - Your Document is Ready',
       html: `
         <h2>Hi ${name},</h2>
         <p>Your document is ready.</p>
         <a href="${accessLink}">🔓 Access Document</a>
-        <p>This link is valid for <strong>3 minutes</strong>.</p>
+        <p>This link is valid for <strong>24 hours</strong>.</p>
       `,
     })
 
