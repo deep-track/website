@@ -12,11 +12,22 @@ import { Navbar } from '@/components/landing-page/navbar';
 
 export default function DocumentPage() {
   const [validToken, setValidToken] = useState<boolean | null>(null); // Initially null
-  const searchParams = useSearchParams();
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
-  const token = searchParams.get('token');
+  
+  // Only access searchParams after component is mounted in the browser
+  const searchParams = mounted ? useSearchParams() : null;
+  const token = mounted ? searchParams?.get('token') : null;
+
+  // Set mounted state to true once the component mounts
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
+    // Skip token validation if not mounted yet
+    if (!mounted) return;
+    
     async function validateToken() {
       if (!token) {
         setValidToken(false);
@@ -37,7 +48,7 @@ export default function DocumentPage() {
     }
 
     validateToken();
-  }, [token]);
+  }, [token, mounted]);
 
   const handleDownload = async (documentPath: string, fileName: string) => {
     try {
