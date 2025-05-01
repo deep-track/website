@@ -1,7 +1,4 @@
 import { Resend } from 'resend'
-import { db } from '@/lib/firebaseConfig'
-import { ref, set } from 'firebase/database'
-import { v4 as uuidv4 } from 'uuid'
 
 const resend = new Resend(process.env.RESEND_API_KEY || '')
 
@@ -9,40 +6,69 @@ export async function GET(req: Request): Promise<Response> {
   const { searchParams } = new URL(req.url)
   const email = searchParams.get('email')
   const name = searchParams.get('name')
+  const title = searchParams.get('title') // the trimmedTitle
 
-  if (!email || !name) {
-    return new Response('Missing email or name', { status: 400 })
+  if (!email || !name || !title) {
+    return new Response('Missing email, name, or title', { status: 400 })
   }
 
-  const token = uuidv4()
-  const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+  // Select the document path and file properties
+  let documentPath: string
+  let filename: string
+  let contentType: string
 
+  switch (title.toLowerCase()) {
+    case 'cap table':
+      documentPath = '/files/deeptrackCapTableUpdated.pdf'
+      filename = 'Cap Table.pdf'
+      contentType = 'application/pdf'
+      break
+    case 'pitch deck':
+      documentPath = '/files/deeptrackPitchDeck.pdf'
+      filename = 'Pitch Deck.pdf'
+      contentType = 'application/pdf'
+      break
+    case 'competition analysis':
+      documentPath = '/files/deeptrackCompetitor.xlsx'
+      filename = 'Competition Analysis.xlsx'
+      contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      break
+    default:
+      return new Response(`Unknown document title: ${title}`, { status: 400 })
+  }
 
   try {
-    // Store token and expiry in Firebase Realtime Database
-    await set(ref(db, `accessTokens/${token}`), {
-      email,
-      name,
-      expiresAt,
-    })
+    const documentUrl = `${process.env.BASE_URL}${documentPath}`
+    const fileRes = await fetch(documentUrl)
 
-    const accessLink = `${process.env.BASE_URL}/documents?token=${token}`;
+    if (!fileRes.ok) {
+      throw new Error('Failed to fetch the document')
+    }
+
+    const arrayBuffer = await fileRes.arrayBuffer()
+    const base64Data = Buffer.from(arrayBuffer).toString('base64')
 
     await resend.emails.send({
       from: 'Document Access <onboarding@resend.dev>',
       to: email,
-      subject: '✅ Access Granted from deeptrack - Your Document is Ready',
+      subject: `📄 Your Requested Document: ${title}`,
       html: `
         <h2>Hi ${name},</h2>
-        <p>Your document is ready.</p>
-        <a href="${accessLink}">🔓 Access Document</a>
-        <p>This link is valid for <strong>24 hours</strong>.</p>
+        <p>Attached is the <strong>${title}</strong> document you requested.</p>
+        <p>Thanks for using our service!</p>
       `,
+      attachments: [
+        {
+          filename,
+          content: base64Data,
+          contentType,
+        },
+      ],
     })
 
-    return new Response('Access email sent to user!', { status: 200 })
+    return new Response('Document sent via email!', { status: 200 })
   } catch (err) {
     console.error(err)
-    return new Response('Error sending access email.', { status: 500 })
+    return new Response('Error sending document.', { status: 500 })
   }
 }

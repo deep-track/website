@@ -101,6 +101,8 @@ export function RequestAccessModal({
             required
             className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#13dfde] focus:bg-[#f1f1f1]"
           />
+          <input type="hidden" name="type" value={title} />
+          
 
           <button
             type="submit"
