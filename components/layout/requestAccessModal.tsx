@@ -81,7 +81,7 @@ export function RequestAccessModal({
         <h2 className="text-xl font-semibold text-gray-900 mb-4">{title}</h2>
 
         <p className="text-sm text-gray-500 mb-6">
-          Please enter your name and email below to request access.
+          Please enter your name and email below to request for the document.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -113,7 +113,7 @@ export function RequestAccessModal({
 
           {success && (
             <p className="text-green-600 text-sm mt-2">
-              Request sent successfully! Check your email for the access link.
+              Request sent successfully! Monitor your email for the requested document.
             </p>
           )}
           {error && (
