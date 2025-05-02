@@ -54,8 +54,8 @@ export async function GET(req: Request): Promise<Response> {
       subject: `📄 Your Requested Document: ${title}`,
       html: `
         <h2>Hi ${name},</h2>
-        <p>Attached is the <strong>${title}</strong> document you requested.</p>
-        <p>Thanks for using our service!</p>
+        <p>Attached is the <strong>${title}</strong> document you requested from deeptrack.</p>
+        <p>We look forward to hearing from you soon!</p>
       `,
       attachments: [
         {
