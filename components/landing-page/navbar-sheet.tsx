@@ -81,6 +81,7 @@ export function NavbarSheet() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem><Link href='/media-use-case'>Media Use Case</Link></DropdownMenuItem>
                 <DropdownMenuItem><Link href='/finance-use-case'>Finance Use Case</Link></DropdownMenuItem>
+                <DropdownMenuItem><Link href='/government-use-case'>Government Use Case</Link></DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 

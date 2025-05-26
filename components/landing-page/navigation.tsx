@@ -51,6 +51,11 @@ const components: { title: string; href: string; description: string }[] = [
     href: '/finance-use-case',
     description: 'Real-time risk assessment and fraud prevention.',
   },
+  {
+    title: 'Government Use Case',
+    href: '/government-use-case',
+    description: 'AI-driven solutions for public sector challenges.',
+  }
 ]
 
 export function Navigation() {
