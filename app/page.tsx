@@ -7,6 +7,7 @@ import ImpactSection from '@/components/landing-page/impact-section';
 import BuiltForSection from '@/components/landing-page/builtForSection';
 import TestimonialSection from '@/components/landing-page/testimonialSection';
 import { Metadata } from 'next';
+import WebinarSection from '@/components/landing-page/webinar-section';
 
 export const metadata: Metadata = {
   openGraph: {
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="space-y-6">
-      {/* <WebinarSection /> */}
+      <WebinarSection />
       <Navbar />
       <Hero />
       <StepsSection />

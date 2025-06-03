@@ -23,11 +23,11 @@ export async function POST(req: Request) {
         await transport.sendMail({
             from: `"Deeptrack™"   ${senderEMail}`,
             to: email,
-            subject: 'Your Webinar Spot is Confirmed: Enhancing Fraud Prevention Webinar',
+            subject: 'Your Webinar Spot is Confirmed:Media Verification, Newsroom Webinar',
             html: `
             <p>Hello ${firstName},</p>
             <p>
-                Thank you for registering for our upcoming webinar, Enhancing Fraud Prevention in the Age of AI. We're excited to have you join us for this insightful session.
+                Thank you for registering for our upcoming webinar, Media Verification in the Age of AI. We're excited to have you join us for this insightful session.
             </p>
             <p>
                 As a quick introduction, deeptrack™ is an advanced deepfake detection solution designed for media outlets, financial institutions, and government agencies. <br />
@@ -35,9 +35,9 @@ export async function POST(req: Request) {
             </p>
             <h4>Webinar Details:</h4>
             <ul>
-                <li>Topic: Enhancing Fraud Prevention in the Age of AI</li>
-                <li>Date: Wednesday, January 29, 2025</li>
-                <li>Time: 11am EAT</li>
+                <li>Topic: Media Verification in the Age of AI</li>
+                <li>Date: Monday, 30th June, 2025</li>
+                <li>Time: 2 pm EAT</li>
                 <li>Webinar Link: <a href="https://meet.google.com/gfx-wybp-zjo">https://meet.google.com/gfx-wybp-zjo</a></li>
             </ul>
 
@@ -45,18 +45,18 @@ export async function POST(req: Request) {
             <ul>
                 <li>The rise of deepfake-driven identity fraud and how fraudsters exploit this technology.</li>
                 <li>Impact projections of fraud enabled by generative AI and the growing need for advanced defense mechanisms.</li>
-                <li>DeepTrack's holistic approach to KYC, securing every touchpoint in the customer journey.</li>
+                <li>DeepTrack's holistic approach to media verification, securing every touchpoint in the media newsroom.</li>
             </ul>
 
             <h4>Meet our speakers:</h4>
             <ul>
-                <li>Saruni Maina - Associate VP, Stablecoins Segment</li>
-                <li>Bryan Koyundi - CEO at DeepTrack</li>
-                <li>Harmaton Njagi - Tech Lead at DeepTrack</li>
+                <li>Bonam Osene - Software Engineer, deeptrack™</li>
+                <li>Bryan Koyundi - CEO at deeptrack™</li>
+                <li>Paul Okello - Tech Lead at deeptrack™</li>
             </ul>
             <p>We can't wait to host you and dive into this critical conversation. We encourage you to add this event to your calendar.</p>
-            <p>If you have any questions ahead of the event, feel free to reach out on our <a href="https://x.com/deeptrck">X(formerly Twitter)</a> or email: marketing@deeptrack.io.</p>
-            <p>See you on January 29th!</p>
+            <p>If you have any questions ahead of the event, feel free to reach out on our <a href="https://x.com/deeptrck">X(formerly Twitter)</a> or email: info@deeptrack.io.</p>
+            <p>See you on June 30th!</p>
             <p><p/>
             <p>
                 Best regards, <br />

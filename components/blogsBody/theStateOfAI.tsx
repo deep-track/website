@@ -30,7 +30,7 @@ const TheStateOfAI: React.FC = () => {
       </div>
 
       {/* NameCard component above the first paragraph */}
-      <NameCard firstName="Christine" lastName="Mwenda" date="12-02-2025" />
+      <NameCard firstName="Hillary" lastName="Nyakundi" date="12-02-2025" />
 
       {/* First paragraph */}
       <p className="text-lg text-gray-300 leading-loose text-justify w-full mb-6 md:text-lg">
