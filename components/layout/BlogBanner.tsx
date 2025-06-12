@@ -73,7 +73,7 @@ const BlogBanner: React.FC = () => {
                                 
                                 {/* Use Next.js <Link> to pass the blog ID */}
                                 <Link
-                                    href={`/blogs/${id}`}
+                                    href={`/blogs/${feature.id}`}
                                     className="text-customTeal flex items-center mt-auto font-medium hover:underline"
                                 >
                                     Read <MdArrowRight size={20} className="ml-1" />

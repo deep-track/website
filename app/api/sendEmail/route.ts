@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
     try {
         await transport.sendMail({
-            from: `"Deeptrack™"   ${senderEMail}`,
+            from: `"deeptrack™"   ${senderEMail}`,
             to: email,
             subject: 'Your Webinar Spot is Confirmed:Media Verification, Newsroom Webinar',
             html: `

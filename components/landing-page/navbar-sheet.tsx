@@ -82,6 +82,7 @@ export function NavbarSheet() {
                 <DropdownMenuItem><Link href='/media-use-case'>Media Use Case</Link></DropdownMenuItem>
                 <DropdownMenuItem><Link href='/finance-use-case'>Finance Use Case</Link></DropdownMenuItem>
                 <DropdownMenuItem><Link href='/government-use-case'>Government Use Case</Link></DropdownMenuItem>
+                <DropdownMenuItem><Link href='/executive-identity-shielding'>Executive Identity Shielding</Link></DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
