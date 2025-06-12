@@ -55,7 +55,14 @@ const components: { title: string; href: string; description: string }[] = [
     title: 'Government Use Case',
     href: '/government-use-case',
     description: 'AI-driven solutions for public sector challenges.',
+  },
+  //added use case for executive identity shielding
+  {
+    title: 'Executive Identity Shielding',
+    href: '/executive-identity-shielding',
+    description: 'Securely shield your executive identity.',
   }
+  
 ]
 
 export function Navigation() {
