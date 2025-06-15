@@ -46,7 +46,7 @@ const WebinarRegistration = () => {
         { setSubmitting, resetForm }: FormikHelpers<FormValues>
     ) => {
         try {
-            const response = await fetch('/api/sendEmail', {
+            const response = await fetch('/api/add-to-google-sheet', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -58,16 +58,32 @@ const WebinarRegistration = () => {
                 throw new Error('Network response was not ok');
             }
 
-            toast.success('Registration successful! Check your email for confirmation.');
+            toast.success('Registration successful! The meeting credentials will automatically download.');
 
-            // optionally save it to google sheets
-            await fetch('/api/add-webinar-sheet', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(values),
-            });
+            // generate and download the PDF receipt
+            const pdfRes = await fetch('/api/genrate-webinar-receipt', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(values),
+});
+
+if (!pdfRes.ok || !pdfRes.headers.get('Content-Type')?.includes('application/pdf')) {
+  throw new Error('Failed to generate a valid PDF.');
+}
+
+const blob = await pdfRes.blob();
+const url = window.URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = 'Webinar_Receipt.pdf';
+document.body.appendChild(a);
+a.click();
+a.remove();
+window.URL.revokeObjectURL(url);
+
+
             resetForm();
 
             // Navigate to the home page after successful form submission
