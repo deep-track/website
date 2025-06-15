@@ -11,7 +11,8 @@ const TheAgeOfCoordinatedAttacks: React.FC = () => {
       </h1>
 
       <p className="text-sm md:text-lg text-gray-300 text-center mb-6 max-w-[705px] mx-auto text-[18px]">
-        As AI technology continues to advance, the threat of AI-driven fraud grows. This article delves into the rising concerns of AI fraud and its implications for enterprises.
+        As AI technology continues to advance, the threat of AI-driven fraud grows. 
+        This article delves into the rising concerns of AI fraud and its implications for enterprises.
       </p>
 
       <div className="flex justify-center items-center text-gray-400 text-sm mb-6">
@@ -30,7 +31,10 @@ const TheAgeOfCoordinatedAttacks: React.FC = () => {
       <NameCard firstName="Bryan" lastName="Koyundi" date="04-06-2025" />
 
       <p className="text-lg text-gray-300 leading-loose text-justify w-full mb-6 md:text-lg">
-        Phishing emails and spoofed domains are no longer the peak of social engineering. Today’s adversaries are leveraging AI-generated voice, video, and automation to orchestrate coordinated deepfake attacks that are fast, adaptive, and deeply manipulative. These campaigns don’t just exploit vulnerabilities — they exploit trust itself.
+        Phishing emails and spoofed domains are no longer the peak of social engineering. Today’s
+         adversaries are leveraging AI-generated voice, video, and automation to orchestrate coordinated
+          deepfake attacks that are fast,
+         adaptive, and deeply manipulative. These campaigns don’t just exploit vulnerabilities — they exploit trust itself.
         Welcome to the era of AI-driven deception. And without the right tools, traditional defenses simply can’t keep up.
       </p>
 
@@ -39,7 +43,9 @@ const TheAgeOfCoordinatedAttacks: React.FC = () => {
       </div>
 
       <p className="text-gray-300 leading-loose text-justify w-full mb-6 text-base md:text-lg">
-        AI has not only streamlined different operations across major fields but it has also enhanced decision-making processes. Even though it presents many pros, AI has also introduced new and growing threats of AI fraud as it's called by many.
+        AI has not only streamlined different operations across major fields but it has also enhanced 
+        decision-making processes. Even though it presents many pros, AI has also introduced new and 
+        growing threats of AI fraud as it's called by many.
       </p>
 
       <div className="w-full flex justify-center mt-6">
@@ -55,7 +61,9 @@ const TheAgeOfCoordinatedAttacks: React.FC = () => {
       </h2>
 
       <p className="text-gray-300 leading-loose text-justify text-base md:text-lg">
-        Unlike early deepfakes that were isolated to a fake video or a cloned voice clip, coordinated deepfake attacks combine multiple synthetic elements across platforms — from video calls and phone calls to email, messaging apps, and internal tools like Slack or Microsoft Teams
+        Unlike early deepfakes that were isolated to a fake video or a cloned voice clip,
+         coordinated deepfake attacks combine multiple synthetic elements across platforms — from
+          video calls and phone calls to email, messaging apps, and internal tools like Slack or Microsoft Teams
       </p>
 
       <h2 className="font-semibold mt-8 mb-4 border-b border-gray-700 pb-2 text-3xl md:text-4xl">
@@ -64,18 +72,23 @@ const TheAgeOfCoordinatedAttacks: React.FC = () => {
 
       <ul className="list-disc ml-6 text-lg text-gray-300 space-y-4">
         <li>
-          <strong className="text-white">A video call with a “CEO”</strong> authorizing a high-value transaction, followed by a Slack message confirming the same.
+          <strong className="text-white">A video call with a “CEO”</strong> authorizing a
+           high-value transaction, followed by a Slack message confirming the same.
         </li>
         <li>
-          <strong className="text-white">A cloned voice:</strong> posing as a finance director calling in with urgency, paired with a realistic-looking invoice via email.
+          <strong className="text-white">A cloned voice:</strong> posing as a finance
+           director calling in with urgency, paired with a realistic-looking invoice via email.
         </li>
         <li>
-          <strong className="text-white">AI-generated LinkedIn profiles or spoofed websites</strong> used to legitimize fraudulent outreach or KYC scams.
+          <strong className="text-white">AI-generated LinkedIn profiles or spoofed websites</strong> 
+          used to legitimize fraudulent outreach or KYC scams.
         </li>
       </ul>
 
       <p className="text-lg text-gray-300 leading-loose text-justify md:text-lg">
-        AI-driven fraud poses a critical threat to enterprises, with industries like finance, government, and healthcare being the most affected. A notable case in 2019 saw a UK energy company lose $243,000 due to a deepfake audio attack.
+        AI-driven fraud poses a critical threat to enterprises, with industries like finance, government,
+         and healthcare being the most affected. A notable case in 2019 saw a UK energy company lose $243,000 
+         due to a deepfake audio attack.
       </p>
 
       <h2 className="font-semibold mt-8 mb-4 border-b border-gray-700 pb-2 text-3xl md:text-4xl">
@@ -84,13 +97,23 @@ const TheAgeOfCoordinatedAttacks: React.FC = () => {
 
       <ol className="list-disc ml-6 text-lg text-gray-300 space-y-4">
         <li>
-          <strong className="text-white">Developer Platform Deepfake Breach:</strong> A well-known software company was targeted by attackers who used SMS phishing, fake login portals, and AI voice cloning to impersonate internal IT staff. Once the employee complied with a phony voice call, multi-factor authentication (MFA) was bypassed, compromising critical crypto wallets and internal data. Takeaway: This was a highly staged, multi-step synthetic campaign — not just a phishing link.
+          <strong className="text-white">Developer Platform Deepfake Breach:</strong> A well-known software company
+           was targeted by attackers who used SMS phishing, fake login portals, and AI voice cloning to impersonate
+            internal IT staff. Once the employee complied with a phony voice call, multi-factor authentication (MFA)
+             was bypassed, compromising critical crypto wallets and internal data. Takeaway: This was a highly staged, 
+             multi-step synthetic campaign — not just a phishing link.
         </li>
         <li>
-          <strong className="text-white">Full-Scale Investment Scam:</strong> Fraudsters constructed a complete clone of a legitimate investment firm, complete with fake customer portals, KYC documents manipulated with AI, and trusted-looking emails. Victims were funneled through what appeared to be a regulated investment process — losing significant sums to synthetic trust engineering.
+          <strong className="text-white">Full-Scale Investment Scam:</strong> Fraudsters constructed a complete 
+          clone of a legitimate investment firm, complete with fake customer portals, KYC documents manipulated
+           with AI, and trusted-looking emails. Victims were funneled through what appeared to be a regulated
+            investment process — losing significant sums to synthetic trust engineering.
         </li>
         <li>
-          <strong className="text-white">CFO Deepfake Video Call in Asia:</strong> An employee at a multinational company joined a video call with what appeared to be their CFO and other executives. All were AI-generated deepfake avatars. After the fake meeting, the employee transferred over $449,000, believing they had received executive approval. A similar attack in Hong Kong cost another firm $25 million.
+          <strong className="text-white">CFO Deepfake Video Call in Asia:</strong> An employee at a multinational
+           company joined a video call with what appeared to be their CFO and other executives. All were AI-generated
+            deepfake avatars. After the fake meeting, the employee transferred over $449,000, believing they had 
+            received executive approval. A similar attack in Hong Kong cost another firm $25 million.
         </li>
       </ol>
 
@@ -99,7 +122,8 @@ const TheAgeOfCoordinatedAttacks: React.FC = () => {
       </h2>
 
       <p className="text-lg text-gray-300 leading-loose text-justify md:text-lg">
-        Even with email gateways, MFA, and awareness training, most security infrastructure wasn’t designed to detect AI-generated content — especially when it’s synchronized across multiple communication channels.
+        Even with email gateways, MFA, and awareness training, most security infrastructure wasn’t designed to
+         detect AI-generated content — especially when it’s synchronized across multiple communication channels.
       </p>
 
       <h3 className="text-2xl font-semibold mt-8 mb-4 border-b border-gray-700 pb-2 md:text-4xl">
@@ -122,7 +146,9 @@ const TheAgeOfCoordinatedAttacks: React.FC = () => {
       </h2>
 
       <p className="text-lg text-gray-300 leading-loose text-justify md:text-lg">
-        deeptrack was engineered specifically to tackle the new frontier of AI-enabled threats. Our platform enables organizations to detect, analyze, and respond to synthetic media in real time — wherever it appears in the communication stack.
+        deeptrack was engineered specifically to tackle the new frontier of AI-enabled threats.
+         Our platform enables organizations to detect, analyze, and respond to synthetic media in real time — wherever
+          it appears in the communication stack.
       </p>
 
       <h3 className="text-2xl font-semibold mt-8 mb-4 border-b border-gray-700 pb-2 md:text-4xl">
@@ -131,16 +157,23 @@ const TheAgeOfCoordinatedAttacks: React.FC = () => {
 
       <ul className="list-disc ml-6 text-lg text-gray-300 space-y-4">
         <li>
-          <strong className="text-white">Multimodal Deepfake Detection</strong> - deeptrack analyzes video, voice, and images using advanced AI models trained on diverse, high-quality datasets. It identifies tampered or synthetic content with industry-leading precision and speed.
+          <strong className="text-white">Multimodal Deepfake Detection</strong> - deeptrack analyzes video, voice,
+           and images using advanced AI models trained on diverse, high-quality datasets. 
+          It identifies tampered or synthetic content with industry-leading precision and speed.
         </li>
         <li>
-          <strong className="text-white">Cross-Channel Monitoring</strong> From call centers and Zoom meetings to document verification and messaging platforms, Deeptrack integrates into everyday workflows to detect threats before they’re acted upon.
+          <strong className="text-white">Cross-Channel Monitoring</strong> From call centers and Zoom meetings to
+           document verification and messaging platforms, deeptrack integrates into everyday workflows to detect
+            threats before they’re acted upon.
         </li>
         <li>
-          <strong className="text-white">Alerting + Forensics</strong> Deeptrack seamlessly feeds alerts into your SIEM, SOAR, or incident response workflows, supported by forensic reporting for compliance, investigations, and legal documentation.
+          <strong className="text-white">Alerting + Forensics</strong> deeptrack seamlessly feeds alerts into your SIEM,
+           SOAR, or incident response workflows, supported by forensic reporting for compliance, investigations,
+            and legal documentation.
         </li>
         <li>
-          <strong className="text-white">Simulation & Preparedness</strong> We help teams simulate synthetic media attacks in real-world tabletop scenarios — training your defenses and exposing blind spots before attackers do.
+          <strong className="text-white">Simulation & Preparedness</strong> We help teams simulate synthetic media attacks
+           in real-world tabletop scenarios — training your defenses and exposing blind spots before attackers do.
         </li>
       </ul>
 

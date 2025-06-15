@@ -10,7 +10,7 @@ import UseCaseInfoSection from '@/components/layout/useCaseInfoSection';
 const features = [
   {
     title: 'Signal-Level Precision',
-    description: 'Detect audio, video, and image-based impersonations of your leadership team using DeepTrack’s multimodal AI engine, fine-tuned to surface even subtle manipulations.'
+    description: 'Detect audio, video, and image-based impersonations of your leadership team using deeptrack’s multimodal AI engine, fine-tuned to surface even subtle manipulations.'
   },
   {
     title: 'Seamless Integration',
@@ -19,7 +19,7 @@ const features = [
   {
     title: 'Proactive Monitoring',
     subtitle: 'High-Risk Channel Surveillance:',
-    description: 'Through partnerships with cyber intelligence and media surveillance services, DeepTrack offers proactive monitoring across social, messaging, and internal corporate platforms.'
+    description: 'Through partnerships with cyber intelligence and media surveillance services, deeptrack offers proactive monitoring across social, messaging, and internal corporate platforms.'
   }
 ]
 
@@ -38,7 +38,7 @@ const ExecutiveIdentityShielding = () => {
       <FeatureHighlight
         title="Combating Executive Impersonation with AI"
         subtitle='Real-Time Defense'
-        description="Executives and public figures are increasingly targeted by synthetic impersonations — from deepfake audio scams to synthetic videos aimed at reputational damage. DeepTrack detects and mitigates these threats before they escalate."
+        description="Executives and public figures are increasingly targeted by synthetic impersonations — from deepfake audio scams to synthetic videos aimed at reputational damage. deeptrack detects and mitigates these threats before they escalate."
         imageSrc='/realtime-defense.jpg'
         imageAlt='Detect Impersonations'
       />

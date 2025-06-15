@@ -20,7 +20,7 @@ export default function ExtraSection() {
           {/* Right column */}
           <div className="flex flex-col space-y-8">
             <p className="text-2xl text-gray-300 leading-relaxed">
-              The DeepTrack AI application is not just a tool
+              The deeptrack AI application is not just a tool
               —it is a fraud prevention and media
               authenticity command center
             </p>
