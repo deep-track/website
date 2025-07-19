@@ -50,6 +50,9 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-6">Company</h3>
             <nav className="flex flex-col space-y-4">
+              <Link href="/company-and-culture" className="text-gray-400 hover:text-white transition-colors">
+                Company & Culture
+              </Link>
               <Link href="#" className="text-gray-400 hover:text-white transition-colors">
                 Careers
               </Link>

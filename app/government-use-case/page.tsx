@@ -28,7 +28,7 @@ const features = [
 const GovernmentUseCase = () => {
   return (
     <div className='space-y-6'>
-      <WebinarSection />
+      {/* <WebinarSection /> */}
         <Navbar/>
           <UseCaseFeatureSection
               useCase='Government'
