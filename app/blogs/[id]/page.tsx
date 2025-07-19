@@ -35,7 +35,7 @@ const DisplayBlog = () => {
 
   return (
     <>
-      <WebinarSection />
+      {/* <WebinarSection /> */}
       <Navbar />
       {BlogComponent ? (
         <BlogComponent />

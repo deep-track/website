@@ -14,7 +14,7 @@ import ExecutiveShielding from '@/components/layout/executiveUseCase';
 const Events = () => {
   return (
       <div className="space-y-6">
-      <WebinarSection /> 
+      {/* <WebinarSection />  */}
         <Navbar />
     
          {/* <Image
