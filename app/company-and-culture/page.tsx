@@ -30,7 +30,6 @@ export default function Home() {
       {/* <WebinarSection /> */}
       <Navbar />
       <CompanyCultureAndLeadership />
-      
       <TestimonialSection />
       <ExtraSection />
       <Footer />
