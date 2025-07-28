@@ -2,7 +2,7 @@
 
 import posthog from "posthog-js";
 import {PostHogProvider as PHProvider} from "posthog-js/react";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 // Initialize PostHog (following official example pattern)
@@ -15,7 +15,6 @@ if (typeof window !== 'undefined') {
         person_profiles: 'identified_only',
         capture_pageview: false, // We'll handle this manually
         capture_pageleave: true,
-        defaults: '2025-05-24',
         debug: process.env.NODE_ENV === 'development',
     })
     
@@ -27,7 +26,9 @@ if (typeof window !== 'undefined') {
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
     return (
         <PHProvider client={posthog}>
-            <PostHogPageView />
+            <Suspense fallback={null}>
+                <PostHogPageView />
+            </Suspense>
             {children}
         </PHProvider>
     )
