@@ -8,15 +8,15 @@ import { usePathname, useSearchParams } from "next/navigation";
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-            api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST ? process.env.NEXT_PUBLIC_POSTHOG_HOST : '/ingest',
-            ui_host: 'https://us.i.posthog.com', // Always use the direct UI host
+            api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || '/ingest',
+            ui_host: 'https://us.i.posthog.com',
             person_profiles: 'identified_only',
             capture_pageview: false,
             capture_pageleave: true,
             loaded: (posthog) => {
                 if (process.env.NODE_ENV === 'development') {
                     posthog.debug()
-                    console.log('🔍 PostHog Debug Mode: Enabled (Development Only)')
+                    console.log('[PostHog] Debug Mode: Enabled (Development Only)')
                 }
             },
         })

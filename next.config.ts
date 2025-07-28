@@ -15,11 +15,6 @@ const nextConfig: NextConfig = {
         source: "/ingest/:path*",
         destination: "https://us.i.posthog.com/:path*",
       },
-      // Handle direct PostHog domain requests
-      {
-        source: "/us.i.posthog.com/:path*",
-        destination: "https://us.i.posthog.com/:path*",
-      },
     ];
   },
   // This is required to support PostHog's reverse proxy
