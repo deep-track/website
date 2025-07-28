@@ -5,6 +5,7 @@ import * as Yup from 'yup'
 import { Input } from '@/components/ui/input'
 import { Button } from '../ui/button'
 import { toast } from 'sonner'
+import { useAnalytics } from '@/lib/posthog'
 
 export default function WaitlistForm() {
   // Validation schema using Yup
@@ -43,6 +44,8 @@ export default function WaitlistForm() {
     time: '',
   }
 
+  const { trackFormSubmit, identifyUser, trackEvent } = useAnalytics();
+
   // Form submission handler
   const handleSubmit = async (
     values: {
@@ -56,16 +59,45 @@ export default function WaitlistForm() {
     { resetForm }: { resetForm: () => void }
   ) => {
     try {
+      // Track form submission attempt
+      trackEvent('demo_booking_started', {
+        company: values.company,
+        preferred_date: values.date,
+        preferred_time: values.time,
+      });
+
       await fetch('/api/add-to-google-sheet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
       })
 
+      // Track successful submission
+      trackFormSubmit('demo_booking_form', true);
+      
+      // Identify the user with their details
+      identifyUser(values.email, {
+        name: values.name,
+        email: values.email,
+        company: values.company,
+        phone: values.phoneNumber,
+        demo_requested: true,
+        demo_date: values.date,
+        demo_time: values.time,
+      });
+
       toast.success('You\'ve successfully booked a demo')
       resetForm()
     } catch (error) {
       console.error(error)
+      
+      // Track failed submission
+      trackFormSubmit('demo_booking_form', false);
+      trackEvent('demo_booking_failed', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        company: values.company,
+      });
+      
       toast.error('Error adding to Waitlist')
     }
   }

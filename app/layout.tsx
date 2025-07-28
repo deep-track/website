@@ -6,6 +6,7 @@ import { AOSInit } from '@/components/aos';
 import GoogleAnalytics from '@/components/google-analytics';
 import CookieBanner from '@/components/cookie-banner';
 import { GoogleTagManager } from '@next/third-parties/google'
+import { PostHogProvider } from './providers';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -46,15 +47,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white overflow-x-hidden relative`}
       >
-        <noscript><iframe src={`https://www.googletagmanager.com/ns.html?id=${process.env.GA_MEASUREMENT_ID!}`}
-          height="0" width="0" style={{display:'none', visibility:'hidden'}}></iframe></noscript>
-        <GoogleAnalytics
-          GA_MEASUREMENT_ID={process.env.GA_MEASUREMENT_ID!}
-        />
-        <GoogleTagManager gtmId={process.env.GA_MEASUREMENT_ID!} />
-        <main className="flex flex-col  space-y-4" >{children} </main>
-        <Toaster />
-        <CookieBanner />
+        <PostHogProvider>
+          <noscript><iframe src={`https://www.googletagmanager.com/ns.html?id=${process.env.GA_MEASUREMENT_ID!}`}
+            height="0" width="0" style={{display:'none', visibility:'hidden'}}></iframe></noscript>
+          <GoogleAnalytics
+            GA_MEASUREMENT_ID={process.env.GA_MEASUREMENT_ID!}
+          />
+          <GoogleTagManager gtmId={process.env.GA_MEASUREMENT_ID!} />
+          <main className="flex flex-col  space-y-4" >{children} </main>
+          <Toaster />
+          <CookieBanner />
+        </PostHogProvider>
       </body>
     </html>
   );

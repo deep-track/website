@@ -6,12 +6,18 @@ import { FlipWords } from '../ui/flip-words'
 import { WaitlistButton } from './waiting-list';
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
+import { useAnalytics } from '@/lib/posthog';
 
 export default function Hero() {
     const words = ['Deepfakes','Generated Text', 'Voice Spoofing', 'Disinformation', 'Fraud'];
+    const { trackFileDownload, trackButtonClick } = useAnalytics();
 
     const handleDownload = () => {
       const localFileUrl = '/files/white-paper.pdf';
+
+      // Track the download event
+      trackFileDownload('white-paper.pdf', 'pdf');
+      trackButtonClick('download_whitepaper', 'hero_section');
 
       // download whitepaper pdf implementation
       const localLink = document.createElement('a');
@@ -38,7 +44,10 @@ export default function Hero() {
             <div className="flex gap-4">
             <WaitlistButton id='demo-btn-home'/>
             <Button
-              onClick={handleDownload}
+              onClick={() => {
+                trackButtonClick('demo_button', 'hero_section');
+                handleDownload();
+              }}
               className="bg-blue-500 text-white px-4 py-4 mt-2 rounded-lg hover:bg-blue-600 transition"
             >
               Download WhitePaper
