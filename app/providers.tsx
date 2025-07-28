@@ -5,23 +5,26 @@ import {PostHogProvider as PHProvider} from "posthog-js/react";
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
-export function PostHogProvider({ children }: { children: React.ReactNode }) {
-    useEffect(() => {
-        posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-            api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || '/ingest',
-            ui_host: 'https://us.i.posthog.com',
-            person_profiles: 'identified_only',
-            capture_pageview: false,
-            capture_pageleave: true,
-            loaded: (posthog) => {
-                if (process.env.NODE_ENV === 'development') {
-                    posthog.debug()
-                    console.log('[PostHog] Debug Mode: Enabled (Development Only)')
-                }
-            },
-        })
-    }, [])
+// Initialize PostHog (following official example pattern)
+if (typeof window !== 'undefined') {
+    // Force direct PostHog host to avoid reverse proxy issues
+    const apiHost =process.env.NEXT_PUBLIC_POSTHOG_HOST
+    
+    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+        api_host: apiHost,
+        person_profiles: 'identified_only',
+        capture_pageview: false, // We'll handle this manually
+        capture_pageleave: true,
+        defaults: '2025-05-24',
+        debug: process.env.NODE_ENV === 'development',
+    })
+    
+    if (process.env.NODE_ENV === 'development') {
+        console.log('[PostHog] Initialized with API host:', apiHost)
+    }
+}
 
+export function PostHogProvider({ children }: { children: React.ReactNode }) {
     return (
         <PHProvider client={posthog}>
             <PostHogPageView />
@@ -42,7 +45,7 @@ function PostHogPageView(): null {
             }
             posthog.capture('$pageview', { 
                 $current_url: url,
-                $referrer: document.referrer, //optional
+                $referrer: document.referrer,
             })
         }
     }, [pathname, searchParams])
