@@ -13,17 +13,33 @@ import {
 import { MoveUpRight } from 'lucide-react'
 import { Button } from '../ui/button'
 import WaitlistForm from './waitlist-form'
+import { useAnalytics } from '@/lib/posthog'
 
 interface WaitlistButtonProps {
   id?: string;
 }
 
 export function WaitlistButton({id}: WaitlistButtonProps) {
+  const { trackButtonClick } = useAnalytics();
+
+  const handleDemoButtonClick = () => {
+    trackButtonClick('book_demo', id || 'unknown_location');
+  };
+
+  const handlePrivacyPolicyClick = () => {
+    trackButtonClick('view_privacy_policy', 'demo_booking_modal');
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         <div className='flex mt-2'>
-          <Button id={id} className="flex p-4 items-center gap-2 hover:bg-customTeal bg-white text-black border group" variant={'outline'}>
+          <Button 
+            id={id} 
+            onClick={handleDemoButtonClick}
+            className="flex p-4 items-center gap-2 hover:bg-customTeal bg-white text-black border group" 
+            variant={'outline'}
+          >
             Book a demo
             <MoveUpRight className="w-4 h-4  text-blue transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
           </Button>
@@ -41,7 +57,11 @@ export function WaitlistButton({id}: WaitlistButtonProps) {
           {/* Button to open Privacy Policy modal */}
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant={'link'} className="text-blue-500 underline">
+              <Button 
+                variant={'link'} 
+                className="text-blue-500 underline"
+                onClick={handlePrivacyPolicyClick}
+              >
                 View Privacy Policy
               </Button>
             </DialogTrigger>
