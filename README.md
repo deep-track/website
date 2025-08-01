@@ -1,6 +1,6 @@
 # DEEPTRACK
 
-DeepTrack is an innovative project dedicated to safeguarding your digital integrity. By leveraging cutting-edge AI technologies, DeepTrack provides solutions that ensure the authenticity, security, and trustworthiness of digital content.
+Deeptrack is an innovative project dedicated to safeguarding your digital integrity. By leveraging cutting-edge AI technologies, DeepTrack provides solutions that ensure the authenticity, security, and trustworthiness of digital content.
 
 ## Project Overview
 DeepTrack aims to combat challenges in digital integrity by providing tools for authentication, monitoring, and protection across various digital mediums. Whether you’re dealing with image verification, audio authentication, or text detection, DeepTrack has you covered.
