@@ -39,7 +39,7 @@ export default function Hero() {
             <FlipWords words={words} />
           </div>
           <p className="mt-4 text-lg leading-relaxed max-w-2xl">
-          Empower your business, safeguard your government, and defend your media with Africa’s leading deepfake detection platform.
+          Powering trust worldwide, safeguarding businesses, governments, and media from deepfakes and digital deception.
           </p>
             <div className="flex gap-4">
             <WaitlistButton id='demo-btn-home'/>
