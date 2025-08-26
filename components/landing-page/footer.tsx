@@ -69,7 +69,14 @@ export default function Footer() {
               <Link href="https://app.eu.vanta.com/deeptrack.io/trust/ykzpe8x33wwv9mki8rjv61" className="text-gray-400 hover:text-white transition-colors">
                 Deeptrack's Trust Center
               </Link>
-        
+          
+            
+              <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+              Compute on Device
+              </Link>
+              <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+              Privacy Secure
+              </Link>
             </nav>
           </div>
         </div>
