@@ -31,7 +31,7 @@ const TheGothamBlog: React.FC = () => {
       </div>
 
       {/* Author Info */}
-      <NameCard firstName="Deeptrack" lastName="Team" date="18-09-2025" />
+      <NameCard firstName="Bryan" lastName="Koyundi" date="18-09-2025" />
 
       {/* Blog Content */}
       <div className="fixed right-12 top-1/4 space-y-2">
