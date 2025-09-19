@@ -28,5 +28,16 @@ export const features: Feature[] = [
         link: '/blogs/1',
         category: 'KYC SECURITY',
         body: '@/components/blogsBody/theAgeOfCordinatedAttack' // Alias to the component
-    }
+    },
+    {
+  id: '2',
+  title: 'Deeptrack Gotham: Defending Journalism in the Age of Deepfakes',
+  description:
+    'Deepfakes are reshaping how misinformation spreads. Gotham empowers journalists to defend truth in the digital era.',
+  image: '/blogs/gotham.jpg', // Add an image in /public/blogs/
+  link: '/blogs/2',
+  category: 'MEDIA VERIFICATION',
+  body: '@/components/blogsBody/theGothamBlog',
+}
+
 ];

@@ -54,17 +54,7 @@ const Events = () => {
           </div>
         </div>
 
-        {/* 🚀 PDF Download */}
-        <div className="text-center mt-10">
-          <a
-            href="/pdfs/gotham-blog.pdf"   // <-- Move PDF into /public/pdfs/
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-3 bg-customTeal text-white rounded-lg shadow-md hover:bg-teal-600 transition"
-          >
-            📄 Download Gotham Blog PDF
-          </a>
-        </div>
+     
       </section>
 
       <div>
