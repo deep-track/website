@@ -20,6 +20,21 @@ const nextConfig: NextConfig = {
   // },
   // This is required to support PostHog's reverse proxy
   skipTrailingSlashRedirect: true,
+  
+  // SEO enhancements
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'index, follow',
+          },
+        ],
+      },
+    ]
+  },
 };
 
 export default nextConfig;
