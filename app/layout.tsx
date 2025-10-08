@@ -138,7 +138,9 @@ export const metadata: Metadata = {
   },
   category: 'Technology',
   classification: 'Business Software',
-  rating: 'safe for work',
+  other: {
+      rating: "safe for work",
+    },
 };
 
 export default function RootLayout({
