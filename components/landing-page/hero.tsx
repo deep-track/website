@@ -47,7 +47,7 @@ export default function Hero() {
                 trackButtonClick('demo_button', 'hero_section');
                 handleDownload();
               }}
-              className="bg-blue-500 text-white px-4 py-4 mt-2 rounded-lg hover:bg-blue-600 transition"
+              className="bg-sky-600 text-white px-4 py-4 mt-2 rounded-lg hover:bg-sky-700 transition"
             >
               Download WhitePaper
             </Button>
