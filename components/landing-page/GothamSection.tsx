@@ -27,11 +27,11 @@ export default function GothamSection() {
   const [isLoading, setIsLoading] = useState(false);
 
   // 🧠 File Handlers
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFiles((prev) => [...prev, ...Array.from(e.target.files)]);
-    }
-  };
+const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const files = e.target.files;
+  if (!files) return;
+  setFiles((prev) => [...prev, ...Array.from(files)]);
+};
 
   const handleUrlAdd = () => {
     if (urlInput.trim() !== "") {
@@ -173,7 +173,7 @@ export default function GothamSection() {
       );
     }
 
-    const models = result.result.models?.map((m) => m.name).join(", ") || "N/A";
+    const models = result.result.models?.map((m: { name: string }) => m.name).join(", ") || "N/A";
     doc.text(`Models Used: ${models}`, margin, (y += lineHeight));
 
     y += 15;
