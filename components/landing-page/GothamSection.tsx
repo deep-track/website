@@ -125,7 +125,7 @@ const handleSubmit = async () => {
 
     try {
       if (result.fileMeta.type.startsWith("image/")) {
-        const imgData = result.imageBase64;
+        const imgData = result.mediaPreview || result.fileUrl;
         doc.addImage(imgData, "JPEG", margin, y, 50, 50);
       } else {
         infoX = margin;
