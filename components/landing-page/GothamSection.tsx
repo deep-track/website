@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import jsPDF from "jspdf";
 import {
   UploadCloud,
   Link2,
@@ -12,29 +15,84 @@ import {
   UsersRound,
   X,
   FileDown,
+  CheckCircle, 
+  AlertTriangle, // Added for the error message icon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import Image from "next/image";
-import jsPDF from "jspdf";
+
+// Dynamically import PaystackButton to avoid "window is not defined" SSR errors
+const PaystackButton = dynamic(
+  () => import("react-paystack").then((mod) => mod.PaystackButton),
+  { ssr: false }
+);
+
+// Define a type for the Paystack reference object
+interface PaystackReference {
+  reference: string;
+}
 
 export default function GothamSection() {
+  // ---------------- State Management ----------------
   const [files, setFiles] = useState<File[]>([]);
   const [urlInput, setUrlInput] = useState("");
   const [urls, setUrls] = useState<string[]>([]);
   const [result, setResult] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [paymentCompleted, setPaymentCompleted] = useState(false);
+  
+  // States for dynamic messages (replaces alerts)
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // 🧠 File Handlers
-const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const files = e.target.files;
-  if (!files) return;
-  setFiles((prev) => [...prev, ...Array.from(files)]);
-};
+  // Paystack Configuration
+  const publicKey =
+    process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_xxxxxxxxxx";
+  const verificationFeeKsh = 100; // Example fee in KES
+
+  // Paystack config memoized
+  const paystackConfig = useMemo(() => ({
+    email: "user@example.com",
+    amount: verificationFeeKsh * 100, // Amount in kobo/cent
+    currency: "KES",
+    publicKey,
+    text: `Pay KSh ${verificationFeeKsh} to Verify Media`,
+    onClose: () => setErrorMessage("Payment cancelled or closed!"),
+  }), [publicKey]);
+
+  // useEffect to automatically dismiss the success and error messages
+  useEffect(() => {
+    if (successMessage || errorMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage("");
+        setErrorMessage("");
+      }, 3000); // 3 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, errorMessage]);
+
+  // ---------------- Handlers (UI/Local State) ----------------
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newFiles = e.target.files;
+    if (!newFiles) return;
+    if (urls.length > 0) {
+     
+      setErrorMessage("Please clear URLs before uploading files.");
+      return;
+    }
+    setFiles((prev) => [...prev, ...Array.from(newFiles)]);
+  };
 
   const handleUrlAdd = () => {
     if (urlInput.trim() !== "") {
+      if (files.length > 0) {
+        // ⭐ Replaced alert with setErrorMessage
+        setErrorMessage("Please clear uploaded files before adding a URL.");
+        return;
+      }
       setUrls((prev) => [...prev, urlInput.trim()]);
       setUrlInput("");
     }
@@ -42,53 +100,85 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
   const handleRemoveFile = (index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
+    if (files.length === 1 && urls.length === 0) setPaymentCompleted(false);
   };
 
   const handleRemoveUrl = (index: number) => {
     setUrls((prev) => prev.filter((_, i) => i !== index));
+    if (urls.length === 0 && files.length === 0) setPaymentCompleted(false);
   };
 
-  // 🚀 Submit for verification
-const handleSubmit = async () => {
-  if (files.length === 0 && urls.length === 0) return;
+  // ---------------- Core Logic (Payment/Verification) ----------------
 
-  setIsLoading(true);
-  setResult(null);
+  const handleVerify = async () => {
+    if (files.length === 0 && urls.length === 0) return;
 
-  try {
-    let res;
+    setIsLoading(true);
+    setResult(null);
+    setErrorMessage(""); // Clear previous errors
 
-    if (files.length > 0) {
-      // --- Upload file case ---
-      const formData = new FormData();
-      formData.append("media", files[0]); // just one file for now
+    try {
+      let res;
+      if (files.length > 0) {
+        const formData = new FormData();
+        formData.append("media", files[0]);
 
-      res = await fetch("/api/check-media", {
-        method: "POST",
-        body: formData,
-      });
-    } else {
-      // --- URL verification case ---
-      res = await fetch("/api/check-media", {
+        res = await fetch("/api/check-media", {
+          method: "POST",
+          body: formData,
+        });
+      } else {
+        res = await fetch("/api/check-media", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: urls[0] }),
+        });
+      }
+
+      if (!res.ok) throw new Error("Verification failed on backend");
+
+      const data = await res.json();
+      setResult(data);
+    } catch (err) {
+      console.error("Verification error:", err);
+      // ⭐ Replaced alert with setErrorMessage for verification failure
+      setErrorMessage("Failed to verify media. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePaymentSuccess = async (response: PaystackReference) => {
+    setIsLoading(true);
+    setSuccessMessage(""); 
+    setErrorMessage(""); // Clear previous errors
+
+    try {
+      const verifyRes = await fetch("/api/verify-payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: urls[0] }), // send first URL
+        body: JSON.stringify({ reference: response.reference }),
       });
+
+      const verifyData = await verifyRes.json();
+      if (verifyData.status === "success") {
+        setPaymentCompleted(true);
+        setSuccessMessage("Payment verified! Starting media analysis...");
+        await handleVerify();
+      } else {
+        setErrorMessage("Payment verification failed! Please contact support.");
+        setPaymentCompleted(false);
+      }
+    } catch (err) {
+      console.error("Payment verification error:", err);
+      setErrorMessage("Error verifying payment. Please try again or contact support.");
+      setPaymentCompleted(false);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    if (!res.ok) throw new Error("Verification failed");
-
-    const data = await res.json();
-    setResult(data);
-  } catch (err) {
-    console.error("Verification error:", err);
-    alert("Failed to verify media. Please try again.");
-  } finally {
-    setIsLoading(false);
-  }
-};
-  // 📄 PDF Generation
-
+  // The rest of the handleDownloadPDF function remains the same...
   const handleDownloadPDF = async () => {
     if (!result) return;
 
@@ -100,15 +190,19 @@ const handleSubmit = async () => {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    // --- Load header and footer ---
+    // --- Load header and footer (NOTE: These files must exist in your /public folder) ---
     const headerImg = "/pdfHeader.png";
     const footerImg = "/pdfFooter.png";
     const headerHeight = 32;
     const footerHeight = 25;
 
     // --- Add header and footer ---
-    doc.addImage(headerImg, "PNG", 0, 0, pageWidth, headerHeight);
-    doc.addImage(footerImg, "PNG", 0, pageHeight - footerHeight, pageWidth, footerHeight);
+    try {
+        doc.addImage(headerImg, "PNG", 0, 0, pageWidth, headerHeight);
+        doc.addImage(footerImg, "PNG", 0, pageHeight - footerHeight, pageWidth, footerHeight);
+    } catch (e) {
+        console.warn("PDF header/footer images not found. Skipping.");
+    }
 
     // --- Title ---
     doc.setFont("helvetica", "bold");
@@ -117,14 +211,13 @@ const handleSubmit = async () => {
     doc.text("Deeptrack Gotham Media Verification Report", margin, y);
     y += 10;
 
-
     // --- Uploaded Media ---
     let infoX = margin + 60;
     let infoY = y + 15;
     let blockHeight = 60;
 
     try {
-      if (result.fileMeta.type.startsWith("image/")) {
+      if (result.fileMeta.type.startsWith("image/") && (result.mediaPreview || result.fileUrl)) {
         const imgData = result.mediaPreview || result.fileUrl;
         doc.addImage(imgData, "JPEG", margin, y, 50, 50);
       } else {
@@ -160,7 +253,6 @@ const handleSubmit = async () => {
     );
 
     y += blockHeight;
-
     y += 10;
 
     // --- Verification Summary ---
@@ -210,19 +302,24 @@ const handleSubmit = async () => {
     for (let i = 0; i < splitRaw.length; i++) {
       if (y > pageHeight - footerHeight - 15) {
         doc.addPage();
-        doc.addImage(headerImg, "PNG", 0, 0, pageWidth, headerHeight);
-        doc.addImage(footerImg, "PNG", 0, pageHeight - footerHeight, pageWidth, footerHeight);
+        try {
+            doc.addImage(headerImg, "PNG", 0, 0, pageWidth, headerHeight);
+            doc.addImage(footerImg, "PNG", 0, pageHeight - footerHeight, pageWidth, footerHeight);
+        } catch (e) { /* silent fail */ }
         y = margin + 10;
       }
       doc.text(splitRaw[i], margin, y);
       y += 4;
     }
 
-    doc.save(`Gotham-Verification-${result.fileMeta.name}.pdf`);
+    doc.save(`Gotham-Verification-${result.fileMeta.name || "report"}.pdf`);
   };
 
+  const isReadyToSubmit = files.length > 0 || urls.length > 0;
+  const isSubmitDisabled = isLoading || !isReadyToSubmit;
+
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="min-h-screen flex flex-col relative bg-slate-900 text-white">
       <Image
         src="/Vector.svg"
         alt="Blue Lines"
@@ -243,13 +340,29 @@ const handleSubmit = async () => {
         </p>
       </section>
 
+      {/* Success Message Toaster */}
+      {successMessage && (
+        <div className="fixed top-5 right-5 z-[100] p-4 rounded-lg bg-green-600 text-white shadow-xl flex items-center gap-2 transition-opacity duration-500">
+          <CheckCircle className="h-5 w-5" />
+          <p className="font-medium">{successMessage}</p>
+        </div>
+      )}
+
+      {/* NEW: Error Message Toaster */}
+      {errorMessage && (
+        <div className="fixed top-5 right-5 z-[100] p-4 rounded-lg bg-red-600 text-white shadow-xl flex items-center gap-2 transition-opacity duration-500">
+          <AlertTriangle className="h-5 w-5" />
+          <p className="font-medium">{errorMessage}</p>
+        </div>
+      )}
+
       {/* Upload Section */}
       <main className="flex-1">
         <div className="mx-auto max-w-2xl px-6">
-          <Card className="shadow-lg border border-dashed border-customTeal bg-foreground">
+          <Card className="shadow-lg border border-dashed border-customTeal bg-slate-800">
             <CardContent className="p-8 space-y-10">
               {/* Upload */}
-              <div className="flex flex-col items-center justify-center border border-dashed border-muted-foreground/70 rounded-xl p-10 bg-muted-foreground/10">
+              <div className="flex flex-col items-center justify-center border border-dashed border-muted-foreground/70 rounded-xl p-10 bg-slate-900/40">
                 <UploadCloud className="h-10 w-10 text-sky-500 mb-3" />
                 <p className="font-medium text-slate-200">Upload Media for Verification</p>
                 <div className="flex items-center gap-3 text-sm text-slate-400 mt-2">
@@ -264,10 +377,12 @@ const handleSubmit = async () => {
                   onChange={handleFileChange}
                   className="hidden"
                   id="file-upload"
+                  disabled={urls.length > 0}
                 />
                 <Button
                   onClick={() => document.getElementById("file-upload")?.click()}
-                  className="bg-sky-600 hover:bg-sky-600 text-white mt-4"
+                  className="bg-sky-600 hover:bg-sky-700 text-white mt-4"
+                  disabled={urls.length > 0}
                 >
                   Browse Files
                 </Button>
@@ -303,11 +418,13 @@ const handleSubmit = async () => {
                     value={urlInput}
                     onChange={(e) => setUrlInput(e.target.value)}
                     placeholder="Paste media URL here..."
-                    className="flex-1 rounded-md border border-slate-700 px-4 py-2 text-sm bg-foreground text-white focus:ring-2 focus:ring-sky-500"
+                    className="flex-1 rounded-md border border-slate-700 px-4 py-2 text-sm bg-slate-800 text-white focus:ring-2 focus:ring-sky-500"
+                    disabled={files.length > 0}
                   />
                   <Button
                     onClick={handleUrlAdd}
-                    className="bg-sky-600 hover:bg-sky-600 text-white"
+                    className="bg-sky-600 hover:bg-sky-700 text-white"
+                    disabled={files.length > 0}
                   >
                     Add
                   </Button>
@@ -328,24 +445,41 @@ const handleSubmit = async () => {
                 )}
               </div>
 
-              <Button
-                disabled={isLoading}
-                onClick={handleSubmit}
-                className="w-full bg-sky-600 hover:bg-sky-700 text-white mt-6"
-              >
-                {isLoading ? "Verifying..." : "Verify Media"}
-              </Button>
+              {/* Action Button: Pay or Verify */}
+              <div className="mt-6">
+                {!paymentCompleted ? (
+                  <div className="flex justify-center">
+                    <PaystackButton
+                      {...paystackConfig}
+                      onSuccess={handlePaymentSuccess}
+                      disabled={isSubmitDisabled}
+                      className={`w-full bg-sky-600 hover:bg-sky-700 text-white py-2 px-4 rounded-md font-semibold text-lg transition-colors ${
+                        isSubmitDisabled ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
+                    />
+                  </div>
+                ) : (
+                  <Button
+                    disabled={isSubmitDisabled}
+                    onClick={handleVerify}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white mt-6"
+                  >
+                    {isLoading ? "Verifying..." : "Re-Verify Media"}
+                  </Button>
+                )}
+              </div>
             </CardContent>
+
             {/* Footer note */}
-            <p className="text-xs text-slate-200 text-center pb-4">
+            <p className="text-xs text-slate-400 text-center pb-4">
               Max file size: 300MB. Accepted formats: JPG, PNG, MP3, WAV, MP4,
-              WebM, MOV, AVI, WMV, MKV, FLV
+              WebM, MOV, AVI, WMV, MKV, FLV. <strong className="text-sky-400">Verification Fee: KSh {verificationFeeKsh} (via Paystack)</strong>.
             </p>
           </Card>
         </div>
       </main>
 
-      {/* Feature Cards */}
+      {/* Feature Cards (Unchanged) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10 mt-10 px-4 sm:px-6">
         {[
           {
@@ -366,12 +500,12 @@ const handleSubmit = async () => {
         ].map((card, i) => (
           <Card
             key={i}
-            className="bg-card-gradient border border-customTeal shadow-lg rounded-xl 
-                 flex flex-col items-center justify-center text-center p-2
-                 w-full h-auto min-h-[160px] sm:min-h-[180px] transition-all"
+            className="bg-slate-900 border border-customTeal shadow-lg rounded-xl
+                     flex flex-col items-center justify-center text-center p-2
+                     w-full h-auto min-h-[160px] sm:min-h-[180px] transition-all"
           >
             <CardHeader className="flex items-center justify-center">
-              <div className="flex items-center justify-center p-3 rounded-full bg-white/10">
+              <div className="flex items-center justify-center p-3 rounded-full bg-sky-600/20">
                 {card.icon}
               </div>
             </CardHeader>
@@ -385,10 +519,10 @@ const handleSubmit = async () => {
         ))}
       </div>
 
-      {/* Results Modal */}
+      {/* Results Modal (Unchanged) */}
       {result && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2">
-          <div className="bg-foreground border border-customTeal rounded-2xl py-4 px-8 w-full max-w-4xl text-neutral-100 shadow-2xl
+          <div className="bg-slate-800 border border-sky-600 rounded-2xl py-4 px-8 w-full max-w-4xl text-neutral-100 shadow-2xl
             max-h-[95vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
@@ -519,13 +653,15 @@ const handleSubmit = async () => {
                 </Button>
                 <Button
                   variant="outline"
-                  className="border-slate-500 text-black hover:bg-red-600 hover:text-white"
+                  className="border-slate-500 text-slate-900 bg-slate-200 hover:bg-red-600 hover:text-white"
                   onClick={() => {
                     setResult(null);
                     setFiles([]);
                     setUrls([]);
-                  }}          >
-                  Close
+                    setPaymentCompleted(false);
+                  }}
+                >
+                  Close & Reset
                 </Button>
               </div>
             </div>
