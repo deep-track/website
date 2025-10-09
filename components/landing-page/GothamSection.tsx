@@ -49,31 +49,45 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   };
 
   // 🚀 Submit for verification
-  const handleSubmit = async () => {
-    if (files.length === 0 && urls.length === 0) return;
+const handleSubmit = async () => {
+  if (files.length === 0 && urls.length === 0) return;
 
-    setIsLoading(true);
-    setResult(null);
+  setIsLoading(true);
+  setResult(null);
 
-    try {
-      // Handle files first (you could adapt for URLs if needed)
+  try {
+    let res;
+
+    if (files.length > 0) {
+      // --- Upload file case ---
       const formData = new FormData();
-      formData.append("media", files[0]); // just one file for demo
+      formData.append("media", files[0]); // just one file for now
 
-      const res = await fetch("/api/check-media", {
+      res = await fetch("/api/check-media", {
         method: "POST",
         body: formData,
       });
-
-      const data = await res.json();
-      setResult(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoading(false);
+    } else {
+      // --- URL verification case ---
+      res = await fetch("/api/check-media", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: urls[0] }), // send first URL
+      });
     }
-  };
 
+    if (!res.ok) throw new Error("Verification failed");
+
+    const data = await res.json();
+    setResult(data);
+  } catch (err) {
+    console.error("Verification error:", err);
+    alert("Failed to verify media. Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+  // 📄 PDF Generation
 
   const handleDownloadPDF = async () => {
     if (!result) return;
@@ -81,7 +95,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const doc = new jsPDF("p", "mm", "a4");
     const margin = 20;
     const lineHeight = 8;
-    let y = margin + 30;
+    let y = margin + 20;
 
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -396,7 +410,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               <div className="flex flex-col items-center justify-center">
                 {result.fileMeta.type.startsWith("image/") && (
                   <img
-                    src={result.imageBase64}
+                    src={result.mediaPreview || result.fileUrl}
                     alt={result.fileMeta.name}
                     className="w-72 h-72 object-contain rounded-lg border border-slate-700"
                   />
@@ -407,7 +421,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                     controls
                     className="w-72 h-72 object-contain rounded-lg border border-slate-700"
                   >
-                    <source src={result.fileUrl || result.imageBase64} type={result.fileMeta.type} />
+                    <source src={result.fileUrl || result.mediaPreview} type={result.fileMeta.type} />
                     Your browser does not support the video tag.
                   </video>
                 )}
@@ -415,7 +429,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                 {result.fileMeta.type.startsWith("audio/") && (
                   <div className="w-72 flex flex-col items-center p-4 border border-slate-700 rounded-lg bg-slate-900/40">
                     <audio controls className="w-full">
-                      <source src={result.fileUrl || result.imageBase64} type={result.fileMeta.type} />
+                      <source src={result.fileUrl || result.mediaPreview} type={result.fileMeta.type} />
                       Your browser does not support the audio tag.
                     </audio>
                     <p className="mt-3 text-sm text-slate-400">Audio Preview</p>
