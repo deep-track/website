@@ -7,19 +7,16 @@ import jsPDF from "jspdf";
 import {
   UploadCloud,
   Link2,
-  Image as ImageIcon,
-  Video,
-  AudioWaveform,
-  Shield,
-  Globe,
-  UsersRound,
   X,
-  FileDown,
+  CheckCircle, 
+  AlertTriangle, 
+  Mail,
+  Phone,
   CheckCircle, 
   AlertTriangle, // Added for the error message icon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 // Dynamically import PaystackButton to avoid "window is not defined" SSR errors
@@ -28,12 +25,12 @@ const PaystackButton = dynamic(
   { ssr: false }
 );
 
-// Define a type for the Paystack reference object
 interface PaystackReference {
   reference: string;
 }
 
 export default function GothamSection() {
+  
   // ---------------- State Management ----------------
   const [files, setFiles] = useState<File[]>([]);
   const [urlInput, setUrlInput] = useState("");
@@ -41,33 +38,59 @@ export default function GothamSection() {
   const [result, setResult] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
-  
-  // States for dynamic messages (replaces alerts)
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  
+  // State for user contact details
+  const [userEmail, setUserEmail] = useState(""); 
+  const [userPhone, setUserPhone] = useState(""); 
 
   // Paystack Configuration
   const publicKey =
     process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_xxxxxxxxxx";
   const verificationFeeKsh = 100; // Example fee in KES
 
-  // Paystack config memoized
+  // Paystack config memoized - UPDATED FOR OPTIONAL CONTACTS
   const paystackConfig = useMemo(() => ({
-    email: "user@example.com",
+    // Use userEmail if valid, otherwise use a placeholder email.
+    // Paystack requires a non-empty, valid email string for all transactions.
+    email: userEmail.includes('@') && userEmail.includes('.') ? userEmail : 'customer@email.com', 
     amount: verificationFeeKsh * 100, // Amount in kobo/cent
     currency: "KES",
     publicKey,
     text: `Pay KSh ${verificationFeeKsh} to Verify Media`,
     onClose: () => setErrorMessage("Payment cancelled or closed!"),
-  }), [publicKey]);
+    metadata: {
+      custom_fields: [
+        // Store the user's phone number as a custom field (even if empty)
+        {
+          display_name: "Customer Phone",
+          variable_name: "customer_phone",
+          value: userPhone,
+        },
+        // Store the actual email used (which might be the placeholder)
+        {
+          display_name: "Customer Email",
+          variable_name: "customer_email",
+          value: userEmail.includes('@') && userEmail.includes('.') ? userEmail : 'N/A (using placeholder)',
+        },
+      ],
+    },
+  }), [publicKey, userEmail, userPhone]); // Dependency: Include userPhone
 
-  // useEffect to automatically dismiss the success and error messages
+  // Utility function for error messages
+  const setError = (message: string) => {
+    setErrorMessage(message);
+    setSuccessMessage("");
+  };
+  
+  // Effect for message dismissal
   useEffect(() => {
     if (successMessage || errorMessage) {
       const timer = setTimeout(() => {
         setSuccessMessage("");
         setErrorMessage("");
-      }, 3000); // 3 seconds
+      }, 3000);
 
       return () => clearTimeout(timer);
     }
@@ -79,8 +102,7 @@ export default function GothamSection() {
     const newFiles = e.target.files;
     if (!newFiles) return;
     if (urls.length > 0) {
-     
-      setErrorMessage("Please clear URLs before uploading files.");
+      setError("Please clear URLs before uploading files.");
       return;
     }
     setFiles((prev) => [...prev, ...Array.from(newFiles)]);
@@ -89,8 +111,7 @@ export default function GothamSection() {
   const handleUrlAdd = () => {
     if (urlInput.trim() !== "") {
       if (files.length > 0) {
-        // ⭐ Replaced alert with setErrorMessage
-        setErrorMessage("Please clear uploaded files before adding a URL.");
+        setError("Please clear uploaded files before adding a URL.");
         return;
       }
       setUrls((prev) => [...prev, urlInput.trim()]);
@@ -107,7 +128,7 @@ export default function GothamSection() {
     setUrls((prev) => prev.filter((_, i) => i !== index));
     if (urls.length === 0 && files.length === 0) setPaymentCompleted(false);
   };
-
+  
   // ---------------- Core Logic (Payment/Verification) ----------------
 
   const handleVerify = async () => {
@@ -115,25 +136,22 @@ export default function GothamSection() {
 
     setIsLoading(true);
     setResult(null);
-    setErrorMessage(""); // Clear previous errors
+    setError(""); 
 
     try {
-      let res;
+      let body: FormData | string;
       if (files.length > 0) {
-        const formData = new FormData();
-        formData.append("media", files[0]);
-
-        res = await fetch("/api/check-media", {
-          method: "POST",
-          body: formData,
-        });
+        body = new FormData();
+        body.append("media", files[0]);
       } else {
-        res = await fetch("/api/check-media", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: urls[0] }),
-        });
+        body = JSON.stringify({ url: urls[0] });
       }
+
+      const res = await fetch("/api/check-media", {
+        method: "POST",
+        headers: files.length === 0 ? { "Content-Type": "application/json" } : undefined,
+        body: body,
+      });
 
       if (!res.ok) throw new Error("Verification failed on backend");
 
@@ -141,8 +159,7 @@ export default function GothamSection() {
       setResult(data);
     } catch (err) {
       console.error("Verification error:", err);
-      // ⭐ Replaced alert with setErrorMessage for verification failure
-      setErrorMessage("Failed to verify media. Please try again.");
+      setError("Failed to verify media. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -151,7 +168,7 @@ export default function GothamSection() {
   const handlePaymentSuccess = async (response: PaystackReference) => {
     setIsLoading(true);
     setSuccessMessage(""); 
-    setErrorMessage(""); // Clear previous errors
+    setError(""); 
 
     try {
       const verifyRes = await fetch("/api/verify-payment", {
@@ -166,167 +183,21 @@ export default function GothamSection() {
         setSuccessMessage("Payment verified! Starting media analysis...");
         await handleVerify();
       } else {
-        setErrorMessage("Payment verification failed! Please contact support.");
+        setError("Payment verification failed! Please contact support.");
         setPaymentCompleted(false);
       }
     } catch (err) {
       console.error("Payment verification error:", err);
-      setErrorMessage("Error verifying payment. Please try again or contact support.");
+      setError("Error verifying payment. Please try again or contact support.");
       setPaymentCompleted(false);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // The rest of the handleDownloadPDF function remains the same...
-  const handleDownloadPDF = async () => {
-    if (!result) return;
-
-    const doc = new jsPDF("p", "mm", "a4");
-    const margin = 20;
-    const lineHeight = 8;
-    let y = margin + 20;
-
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-
-    // --- Load header and footer (NOTE: These files must exist in your /public folder) ---
-    const headerImg = "/pdfHeader.png";
-    const footerImg = "/pdfFooter.png";
-    const headerHeight = 32;
-    const footerHeight = 25;
-
-    // --- Add header and footer ---
-    try {
-        doc.addImage(headerImg, "PNG", 0, 0, pageWidth, headerHeight);
-        doc.addImage(footerImg, "PNG", 0, pageHeight - footerHeight, pageWidth, footerHeight);
-    } catch (e) {
-        console.warn("PDF header/footer images not found. Skipping.");
-    }
-
-    // --- Title ---
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.setTextColor(0, 0, 0);
-    doc.text("Deeptrack Gotham Media Verification Report", margin, y);
-    y += 10;
-
-    // --- Uploaded Media ---
-    let infoX = margin + 60;
-    let infoY = y + 15;
-    let blockHeight = 60;
-
-    try {
-      if (result.fileMeta.type.startsWith("image/") && (result.mediaPreview || result.fileUrl)) {
-        const imgData = result.mediaPreview || result.fileUrl;
-        doc.addImage(imgData, "JPEG", margin, y, 50, 50);
-      } else {
-        infoX = margin;
-        infoY = y + 10;
-        blockHeight = 40;
-      }
-    } catch (err) {
-      console.error("Media not added to PDF:", err);
-    }
-
-    // --- File Info ---
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text("File Information", infoX, infoY);
-
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(60);
-    const fileInfoStartY = infoY + 10;
-
-    doc.text(`File Name: ${result.fileMeta.name}`, infoX, fileInfoStartY);
-    doc.text(`Type: ${result.fileMeta.type}`, infoX, fileInfoStartY + lineHeight);
-    doc.text(
-      `Size: ${(result.fileMeta.size / 1024).toFixed(2)} KB`,
-      infoX,
-      fileInfoStartY + 2 * lineHeight
-    );
-    doc.text(
-      `Uploaded: ${new Date(result.timestamp).toLocaleString()}`,
-      infoX,
-      fileInfoStartY + 3 * lineHeight
-    );
-
-    y += blockHeight;
-    y += 10;
-
-    // --- Verification Summary ---
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.setTextColor(0);
-    doc.text("Verification Summary", margin, (y += 10));
-    doc.setDrawColor(0, 0, 0);
-    doc.line(margin, y + 2, 190, y + 2);
-
-    y += 10;
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(0);
-    doc.setFontSize(12);
-
-
-    doc.text(`Request ID: ${result.result.requestId}`, margin, (y += lineHeight));
-    doc.text(`Status: ${result.result.status}`, margin, (y += lineHeight));
-    if (result.result.score !== null) {
-      doc.text(
-        `Confidence Score: ${(result.result.score * 100).toFixed(1)}%`,
-        margin,
-        (y += lineHeight)
-      );
-    }
-
-    const models = result.result.models?.map((m: { name: string }) => m.name).join(", ") || "N/A";
-    doc.text(`Models Used: ${models}`, margin, (y += lineHeight));
-
-    y += 15;
-
-    // --- Models Section ---
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(0);
-    doc.setFontSize(14);
-    doc.text("Models", margin, (y += 10));
-    doc.setDrawColor(0, 0, 0);
-    doc.line(margin, y + 2, 190, y + 2);
-
-    y += 10;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(12);
-    doc.setTextColor(60);
-
-    const modelDetails = Array.isArray(result.result.models) ? result.result.models : [];
-
-    if (modelDetails.length === 0) {
-      doc.text("No model data available.", margin, (y += 6));
-    } else {
-      modelDetails.forEach((model: any, index: number) => {
-        if (y > pageHeight - footerHeight - 30) {
-          doc.addPage();
-          doc.addImage(headerImg, "PNG", 0, 0, pageWidth, headerHeight);
-          doc.addImage(footerImg, "PNG", 0, pageHeight - footerHeight, pageWidth, footerHeight);
-          y = margin + 10;
-        }
-
-        const modelName = model.name || "Unnamed Model";
-        const modelStatus = model.status || "Unknown";
-        const modelScore =
-          typeof model.score === "number" ? model.score.toFixed(2) : "N/A";
-
-        doc.text(`${index + 1}.Name: ${modelName}`, margin, (y += 5));
-        doc.text(`Status: ${modelStatus}`, margin + 3, (y += 5));
-        doc.text(`Score: ${(modelScore * 100).toFixed(1)}%`, margin + 3, (y += 5));
-
-        y += 4;
-      });
-    }
-
-    doc.save(`Gotham-Verification-${result.fileMeta.name || "report"}.pdf`);
-  };
 
   const isReadyToSubmit = files.length > 0 || urls.length > 0;
+  // UPDATED: isSubmitDisabled now only checks if content is ready
   const isSubmitDisabled = isLoading || !isReadyToSubmit;
 
   return (
@@ -351,15 +222,13 @@ export default function GothamSection() {
         </p>
       </section>
 
-      {/* Success Message Toaster */}
+      {/* Message Toasters */}
       {successMessage && (
         <div className="fixed top-5 right-5 z-[100] p-4 rounded-lg bg-green-600 text-white shadow-xl flex items-center gap-2 transition-opacity duration-500">
           <CheckCircle className="h-5 w-5" />
           <p className="font-medium">{successMessage}</p>
         </div>
       )}
-
-      {/* NEW: Error Message Toaster */}
       {errorMessage && (
         <div className="fixed top-5 right-5 z-[100] p-4 rounded-lg bg-red-600 text-white shadow-xl flex items-center gap-2 transition-opacity duration-500">
           <AlertTriangle className="h-5 w-5" />
@@ -372,15 +241,12 @@ export default function GothamSection() {
         <div className="mx-auto max-w-2xl px-6">
           <Card className="shadow-lg border border-dashed border-customTeal bg-foreground/10">
             <CardContent className="p-8 space-y-10">
+              
               {/* Upload */}
               <div className="flex flex-col items-center justify-center border border-dashed border-muted-foreground/50 rounded-xl p-10 bg-foreground/20">
                 <UploadCloud className="h-10 w-10 text-sky-500 mb-3" />
                 <p className="font-medium text-slate-200">Upload Media for Verification</p>
-                <div className="flex items-center gap-3 text-sm text-slate-400 mt-2">
-                  <span className="flex items-center gap-1"><Video className="h-4 w-4" /> Video</span>
-                  <span className="flex items-center gap-1"><ImageIcon className="h-4 w-4" /> Image</span>
-                  <span className="flex items-center gap-1"><AudioWaveform className="h-4 w-4" /> Audio</span>
-                </div>
+                
                 <input
                   type="file"
                   accept="image/*,video/*,audio/*"
@@ -392,6 +258,8 @@ export default function GothamSection() {
                 />
                 <Button
                   onClick={() => document.getElementById("file-upload")?.click()}
+                  className="bg-sky-600 hover:bg-sky-700 text-white mt-4"
+                  disabled={urls.length > 0}
                   className="bg-sky-600 hover:bg-sky-700 text-white mt-4"
                   disabled={urls.length > 0}
                 >
@@ -456,6 +324,42 @@ export default function GothamSection() {
                 )}
               </div>
 
+              {/* UPDATED: Email and Phone Input Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Email Input */}
+                  <div className="flex flex-col w-full space-y-2">
+                      <label htmlFor="user-email" className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-sky-400" />
+                          Your Email (Optional, for receipt)
+                      </label>
+                      <input
+                          type="email"
+                          id="user-email"
+                          value={userEmail}
+                          onChange={(e) => setUserEmail(e.target.value)}
+                          placeholder="name@example.com (Optional)"
+                          className="rounded-md border border-slate-700 px-4 py-2 text-sm bg-slate-900 text-white focus:ring-2 focus:ring-sky-500"
+                      />
+                  </div>
+                  
+                  {/* Phone Input */}
+                  <div className="flex flex-col w-full space-y-2">
+                      <label htmlFor="user-phone" className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-sky-400" />
+                          Your Phone (Optional, for M-Pesa tracking)
+                      </label>
+                      <input
+                          type="tel"
+                          id="user-phone"
+                          value={userPhone}
+                          onChange={(e) => setUserPhone(e.target.value)}
+                          placeholder="e.g., 0712345678 (Optional)"
+                          className="rounded-md border border-slate-700 px-4 py-2 text-sm bg-slate-900 text-white focus:ring-2 focus:ring-sky-500"
+                      />
+                  </div>
+              </div>
+
+
               {/* Action Button: Pay or Verify */}
               <div className="mt-6">
                 {!paymentCompleted ? (
@@ -463,21 +367,26 @@ export default function GothamSection() {
                     <PaystackButton
                       {...paystackConfig}
                       onSuccess={handlePaymentSuccess}
-                      disabled={isSubmitDisabled}
-                      className={`w-full bg-sky-600 hover:bg-sky-700 text-white py-2 px-4 rounded-md font-semibold  transition-colors ${
+                      // Submission is only disabled if no file/URL is ready
+                      disabled={isSubmitDisabled} 
+                      className={`w-full bg-sky-600 hover:bg-sky-700 text-white py-2 px-4 rounded-md font-semibold text-lg transition-colors ${
                         isSubmitDisabled ? "opacity-50 cursor-not-allowed" : ""
                       }`}
                     />
                   </div>
                 ) : (
                   <Button
-                    disabled={isSubmitDisabled}
+                    disabled={isLoading || !isReadyToSubmit} 
                     onClick={handleVerify}
                     className="w-full bg-green-600 hover:bg-green-700 text-white mt-6"
                   >
                     {isLoading ? "Verifying..." : "Re-Verify Media"}
                   </Button>
                 )}
+                 {!isReadyToSubmit && (
+                    <p className="mt-2 text-center text-sm text-slate-400">Please upload a file or add a URL to proceed.</p>
+                )}
+                {/* Removed the red error message about email/phone being required */}
               </div>
             </CardContent>
             <div className="flex justify-center mb-2">
@@ -697,13 +606,15 @@ export default function GothamSection() {
                     setFiles([]);
                     setUrls([]);
                     setPaymentCompleted(false);
+                    setUserEmail("");
+                    setUserPhone("");
                   }}
-              >
-                Close
-              </Button>
+                >
+                  Close & Reset
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
       )}
     </div>
   );
