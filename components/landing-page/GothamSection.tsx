@@ -8,15 +8,21 @@ import {
   UploadCloud,
   Link2,
   X,
-  CheckCircle, 
-  AlertTriangle, 
+  Image as ImageIcon,
+  FileDown,
+  Video,
+  AudioWaveform,
+  Shield,
+  Globe,
+  UsersRound,
+
   Mail,
   Phone,
-  CheckCircle, 
+  CheckCircle,
   AlertTriangle, // Added for the error message icon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 // Dynamically import PaystackButton to avoid "window is not defined" SSR errors
@@ -30,7 +36,7 @@ interface PaystackReference {
 }
 
 export default function GothamSection() {
-  
+
   // ---------------- State Management ----------------
   const [files, setFiles] = useState<File[]>([]);
   const [urlInput, setUrlInput] = useState("");
@@ -40,10 +46,10 @@ export default function GothamSection() {
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  
+
   // State for user contact details
-  const [userEmail, setUserEmail] = useState(""); 
-  const [userPhone, setUserPhone] = useState(""); 
+  const [userEmail, setUserEmail] = useState("");
+  const [userPhone, setUserPhone] = useState("");
 
   // Paystack Configuration
   const publicKey =
@@ -54,7 +60,7 @@ export default function GothamSection() {
   const paystackConfig = useMemo(() => ({
     // Use userEmail if valid, otherwise use a placeholder email.
     // Paystack requires a non-empty, valid email string for all transactions.
-    email: userEmail.includes('@') && userEmail.includes('.') ? userEmail : 'customer@email.com', 
+    email: userEmail.includes('@') && userEmail.includes('.') ? userEmail : 'customer@email.com',
     amount: verificationFeeKsh * 100, // Amount in kobo/cent
     currency: "KES",
     publicKey,
@@ -83,7 +89,7 @@ export default function GothamSection() {
     setErrorMessage(message);
     setSuccessMessage("");
   };
-  
+
   // Effect for message dismissal
   useEffect(() => {
     if (successMessage || errorMessage) {
@@ -128,7 +134,7 @@ export default function GothamSection() {
     setUrls((prev) => prev.filter((_, i) => i !== index));
     if (urls.length === 0 && files.length === 0) setPaymentCompleted(false);
   };
-  
+
   // ---------------- Core Logic (Payment/Verification) ----------------
 
   const handleVerify = async () => {
@@ -136,7 +142,7 @@ export default function GothamSection() {
 
     setIsLoading(true);
     setResult(null);
-    setError(""); 
+    setError("");
 
     try {
       let body: FormData | string;
@@ -167,8 +173,8 @@ export default function GothamSection() {
 
   const handlePaymentSuccess = async (response: PaystackReference) => {
     setIsLoading(true);
-    setSuccessMessage(""); 
-    setError(""); 
+    setSuccessMessage("");
+    setError("");
 
     try {
       const verifyRes = await fetch("/api/verify-payment", {
@@ -193,6 +199,154 @@ export default function GothamSection() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // The rest of the handleDownloadPDF function remains the same...
+  const handleDownloadPDF = async () => {
+    if (!result) return;
+
+    const doc = new jsPDF("p", "mm", "a4");
+    const margin = 20;
+    const lineHeight = 8;
+    let y = margin + 20;
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // --- Load header and footer (NOTE: These files must exist in your /public folder) ---
+    const headerImg = "/pdfHeader.png";
+    const footerImg = "/pdfFooter.png";
+    const headerHeight = 32;
+    const footerHeight = 25;
+
+    // --- Add header and footer ---
+    try {
+      doc.addImage(headerImg, "PNG", 0, 0, pageWidth, headerHeight);
+      doc.addImage(footerImg, "PNG", 0, pageHeight - footerHeight, pageWidth, footerHeight);
+    } catch (e) {
+      console.warn("PDF header/footer images not found. Skipping.");
+    }
+
+    // --- Title ---
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Deeptrack Gotham Media Verification Report", margin, y);
+    y += 10;
+
+    // --- Uploaded Media ---
+    let infoX = margin + 60;
+    let infoY = y + 15;
+    let blockHeight = 60;
+
+    try {
+      if (result.fileMeta.type.startsWith("image/") && (result.mediaPreview || result.fileUrl)) {
+        const imgData = result.mediaPreview || result.fileUrl;
+        doc.addImage(imgData, "JPEG", margin, y, 50, 50);
+      } else {
+        infoX = margin;
+        infoY = y + 10;
+        blockHeight = 40;
+      }
+    } catch (err) {
+      console.error("Media not added to PDF:", err);
+    }
+
+    // --- File Info ---
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.setTextColor(0);
+    doc.text("File Information", infoX, infoY);
+
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(60);
+    const fileInfoStartY = infoY + 10;
+
+    doc.text(`File Name: ${result.fileMeta.name}`, infoX, fileInfoStartY);
+    doc.text(`Type: ${result.fileMeta.type}`, infoX, fileInfoStartY + lineHeight);
+    doc.text(
+      `Size: ${(result.fileMeta.size / 1024).toFixed(2)} KB`,
+      infoX,
+      fileInfoStartY + 2 * lineHeight
+    );
+    doc.text(
+      `Uploaded: ${new Date(result.timestamp).toLocaleString()}`,
+      infoX,
+      fileInfoStartY + 3 * lineHeight
+    );
+
+    y += blockHeight;
+    y += 10;
+
+    // --- Verification Summary ---
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.setTextColor(0);
+    doc.text("Verification Summary", margin, (y += 10));
+    doc.setDrawColor(0, 0, 0);
+    doc.line(margin, y + 2, 190, y + 2);
+
+    y += 10;
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(0);
+    doc.setFontSize(12);
+
+
+    doc.text(`Request ID: ${result.result.requestId}`, margin, (y += lineHeight));
+    doc.text(`Status: ${result.result.status}`, margin, (y += lineHeight));
+    if (result.result.score !== null) {
+      doc.text(
+        `Confidence Score: ${(result.result.score * 100).toFixed(1)}%`,
+        margin,
+        (y += lineHeight)
+      );
+    }
+
+    const models = result.result.models?.map((m: { name: string }) => m.name).join(", ") || "N/A";
+    doc.text(`Models Used: ${models}`, margin, (y += lineHeight));
+
+    y += 15;
+
+    // --- Models Section ---
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0);
+    doc.setFontSize(14);
+    doc.text("Models", margin, (y += 10));
+    doc.setDrawColor(0, 0, 0);
+    doc.line(margin, y + 2, 190, y + 2);
+
+    y += 10;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.setTextColor(60);
+
+    const modelDetails = Array.isArray(result.result.models) ? result.result.models : [];
+
+    if (modelDetails.length === 0) {
+      doc.text("No model data available.", margin, (y += 6));
+    } else {
+      modelDetails.forEach((model: any, index: number) => {
+        if (y > pageHeight - footerHeight - 30) {
+          doc.addPage();
+          doc.addImage(headerImg, "PNG", 0, 0, pageWidth, headerHeight);
+          doc.addImage(footerImg, "PNG", 0, pageHeight - footerHeight, pageWidth, footerHeight);
+          y = margin + 10;
+        }
+
+        const modelName = model.name || "Unnamed Model";
+        const modelStatus = model.status || "Unknown";
+        const modelScore =
+          typeof model.score === "number" ? model.score.toFixed(2) : "N/A";
+
+        doc.text(`${index + 1}.Name: ${modelName}`, margin, (y += 5));
+        doc.text(`Status: ${modelStatus}`, margin + 3, (y += 5));
+        doc.text(`Score: ${(modelScore * 100).toFixed(1)}%`, margin + 3, (y += 5));
+
+        y += 4;
+      });
+    }
+
+    doc.save(`Gotham-Verification-${result.fileMeta.name || "report"}.pdf`);
   };
 
 
@@ -241,12 +395,16 @@ export default function GothamSection() {
         <div className="mx-auto max-w-2xl px-6">
           <Card className="shadow-lg border border-dashed border-customTeal bg-foreground/10">
             <CardContent className="p-8 space-y-10">
-              
+
               {/* Upload */}
               <div className="flex flex-col items-center justify-center border border-dashed border-muted-foreground/50 rounded-xl p-10 bg-foreground/20">
                 <UploadCloud className="h-10 w-10 text-sky-500 mb-3" />
                 <p className="font-medium text-slate-200">Upload Media for Verification</p>
-                
+                <div className="flex items-center gap-3 text-sm text-slate-400 mt-2">
+                  <span className="flex items-center gap-1"><Video className="h-4 w-4" /> Video</span>
+                  <span className="flex items-center gap-1"><ImageIcon className="h-4 w-4" /> Image</span>
+                  <span className="flex items-center gap-1"><AudioWaveform className="h-4 w-4" /> Audio</span>
+                </div>
                 <input
                   type="file"
                   accept="image/*,video/*,audio/*"
@@ -258,8 +416,6 @@ export default function GothamSection() {
                 />
                 <Button
                   onClick={() => document.getElementById("file-upload")?.click()}
-                  className="bg-sky-600 hover:bg-sky-700 text-white mt-4"
-                  disabled={urls.length > 0}
                   className="bg-sky-600 hover:bg-sky-700 text-white mt-4"
                   disabled={urls.length > 0}
                 >
@@ -326,37 +482,37 @@ export default function GothamSection() {
 
               {/* UPDATED: Email and Phone Input Section */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Email Input */}
-                  <div className="flex flex-col w-full space-y-2">
-                      <label htmlFor="user-email" className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                          <Mail className="h-4 w-4 text-sky-400" />
-                          Your Email (Optional, for receipt)
-                      </label>
-                      <input
-                          type="email"
-                          id="user-email"
-                          value={userEmail}
-                          onChange={(e) => setUserEmail(e.target.value)}
-                          placeholder="name@example.com (Optional)"
-                          className="rounded-md border border-slate-700 px-4 py-2 text-sm bg-slate-900 text-white focus:ring-2 focus:ring-sky-500"
-                      />
-                  </div>
-                  
-                  {/* Phone Input */}
-                  <div className="flex flex-col w-full space-y-2">
-                      <label htmlFor="user-phone" className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                          <Phone className="h-4 w-4 text-sky-400" />
-                          Your Phone (Optional, for M-Pesa tracking)
-                      </label>
-                      <input
-                          type="tel"
-                          id="user-phone"
-                          value={userPhone}
-                          onChange={(e) => setUserPhone(e.target.value)}
-                          placeholder="e.g., 0712345678 (Optional)"
-                          className="rounded-md border border-slate-700 px-4 py-2 text-sm bg-slate-900 text-white focus:ring-2 focus:ring-sky-500"
-                      />
-                  </div>
+                {/* Email Input */}
+                <div className="flex flex-col w-full space-y-2">
+                  <label htmlFor="user-email" className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-sky-400" />
+                    Email (Optional, for receipt)
+                  </label>
+                  <input
+                    type="email"
+                    id="user-email"
+                    value={userEmail}
+                    onChange={(e) => setUserEmail(e.target.value)}
+                    placeholder="name@example.com (Optional)"
+                    className="rounded-md border border-slate-700 px-4 py-2 text-sm bg-foreground text-white focus:ring-2 focus:ring-sky-500"
+                  />
+                </div>
+
+                {/* Phone Input */}
+                <div className="flex flex-col w-full space-y-2">
+                  <label htmlFor="user-phone" className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-sky-400" />
+                    Phone (Optional, for M-Pesa tracking)
+                  </label>
+                  <input
+                    type="tel"
+                    id="user-phone"
+                    value={userPhone}
+                    onChange={(e) => setUserPhone(e.target.value)}
+                    placeholder="e.g., 0712345678 (Optional)"
+                    className="rounded-md border border-slate-700 px-4 py-2 text-sm bg-foreground/40 text-white focus:ring-2 focus:ring-sky-500"
+                  />
+                </div>
               </div>
 
 
@@ -368,29 +524,28 @@ export default function GothamSection() {
                       {...paystackConfig}
                       onSuccess={handlePaymentSuccess}
                       // Submission is only disabled if no file/URL is ready
-                      disabled={isSubmitDisabled} 
-                      className={`w-full bg-sky-600 hover:bg-sky-700 text-white py-2 px-4 rounded-md font-semibold text-lg transition-colors ${
-                        isSubmitDisabled ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
+                      disabled={isSubmitDisabled}
+                      className={`w-full bg-sky-600 hover:bg-sky-700 text-white py-2 px-4 rounded-md font-semibold transition-colors ${isSubmitDisabled ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                     />
                   </div>
                 ) : (
                   <Button
-                    disabled={isLoading || !isReadyToSubmit} 
+                    disabled={isLoading || !isReadyToSubmit}
                     onClick={handleVerify}
                     className="w-full bg-green-600 hover:bg-green-700 text-white mt-6"
                   >
                     {isLoading ? "Verifying..." : "Re-Verify Media"}
                   </Button>
                 )}
-                 {!isReadyToSubmit && (
-                    <p className="mt-2 text-center text-sm text-slate-400">Please upload a file or add a URL to proceed.</p>
-                )}
                 {/* Removed the red error message about email/phone being required */}
               </div>
             </CardContent>
             <div className="flex justify-center mb-2">
-              <p className="text-sky-400 text-sm">Verification Fee: KSh {verificationFeeKsh} (via Paystack)</p>
+              {!isReadyToSubmit && (
+                <p className=" text-center text-sm text-sky-400">Please upload a file or add a URL to proceed.</p>
+              )}
+
             </div>
 
             {/* Footer note */}
@@ -423,7 +578,7 @@ export default function GothamSection() {
         ].map((card, i) => (
           <Card
             key={i}
-            className="bg-slate-900/50 border border-customTeal shadow-lg rounded-xl
+            className="bg-slate-900/30 border border-customTeal shadow-lg rounded-xl
                      flex flex-col items-center justify-center text-center p-2
                      w-full h-auto min-h-[160px] sm:min-h-[180px] transition-all"
           >
@@ -454,13 +609,13 @@ export default function GothamSection() {
               <Button
                 variant="ghost"
                 size="icon"
-                  onClick={() => {
-                    setResult(null);
-                    setFiles([]);
-                    setUrls([]);
-                    setPaymentCompleted(false);
-                  }}
-                 className="text-slate-400 hover:text-sky-400"
+                onClick={() => {
+                  setResult(null);
+                  setFiles([]);
+                  setUrls([]);
+                  setPaymentCompleted(false);
+                }}
+                className="text-slate-400 hover:text-sky-400"
               >
                 <X className="h-5 w-5" />
               </Button>
@@ -565,8 +720,8 @@ export default function GothamSection() {
                     <div className="flex justify-between items-center mb-2">
                       <h4 className="text-sm font-semibold text-white">{model.name}</h4>
                       <span className={`text-xs px-2 py-1 rounded-full ${model.status === "MANIPULATED" ? "bg-red-600/40 text-red-300" :
-                          model.status === "AUTHENTIC" ? "bg-green-600/40 text-green-300" :
-                            "bg-slate-700 text-gray-300"
+                        model.status === "AUTHENTIC" ? "bg-green-600/40 text-green-300" :
+                          "bg-slate-700 text-gray-300"
                         }`}>
                         {model.status || "ANALYZING"}
                       </span>
@@ -574,10 +729,10 @@ export default function GothamSection() {
                     <div className="w-full bg-neutral-700 h-1.5 mt-8 rounded-full">
                       <div
                         className={`h-1.5 rounded-full ${model.status === "MANIPULATED"
-                            ? "bg-red-500"
-                            : model.status === "AUTHENTIC"
-                              ? "bg-green-500"
-                              : "bg-sky-500 animate-pulse"
+                          ? "bg-red-500"
+                          : model.status === "AUTHENTIC"
+                            ? "bg-green-500"
+                            : "bg-sky-500 animate-pulse"
                           }`}
                         style={{ width: `${model.score ? model.score * 100 : 10}%` }}
                       ></div>
@@ -601,20 +756,20 @@ export default function GothamSection() {
               <Button
                 variant="outline"
                 className="border-slate-500 text-black hover:bg-red-600 hover:text-white"
-                  onClick={() => {
-                    setResult(null);
-                    setFiles([]);
-                    setUrls([]);
-                    setPaymentCompleted(false);
-                    setUserEmail("");
-                    setUserPhone("");
-                  }}
-                >
-                  Close & Reset
-                </Button>
-              </div>
+                onClick={() => {
+                  setResult(null);
+                  setFiles([]);
+                  setUrls([]);
+                  setPaymentCompleted(false);
+                  setUserEmail("");
+                  setUserPhone("");
+                }}
+              >
+                Close & Reset
+              </Button>
             </div>
           </div>
+        </div>
       )}
     </div>
   );
