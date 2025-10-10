@@ -192,160 +192,13 @@ export default function GothamSection() {
     }
   };
 
-  // The rest of the handleDownloadPDF function remains the same...
-  const handleDownloadPDF = async () => {
-    if (!result) return;
-
-    const doc = new jsPDF("p", "mm", "a4");
-    const margin = 20;
-    const lineHeight = 8;
-    let y = margin + 20;
-
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-
-    // --- Load header and footer (NOTE: These files must exist in your /public folder) ---
-    const headerImg = "/pdfHeader.png";
-    const footerImg = "/pdfFooter.png";
-    const headerHeight = 32;
-    const footerHeight = 25;
-
-    // --- Add header and footer ---
-    try {
-        doc.addImage(headerImg, "PNG", 0, 0, pageWidth, headerHeight);
-        doc.addImage(footerImg, "PNG", 0, pageHeight - footerHeight, pageWidth, footerHeight);
-    } catch (e) {
-        console.warn("PDF header/footer images not found. Skipping.");
-    }
-
-    // --- Title ---
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.setTextColor(0, 0, 0);
-    doc.text("Deeptrack Gotham Media Verification Report", margin, y);
-    y += 10;
-
-    // --- Uploaded Media ---
-    let infoX = margin + 60;
-    let infoY = y + 15;
-    let blockHeight = 60;
-
-    try {
-      if (result.fileMeta.type.startsWith("image/") && (result.mediaPreview || result.fileUrl)) {
-        const imgData = result.mediaPreview || result.fileUrl;
-        doc.addImage(imgData, "JPEG", margin, y, 50, 50);
-      } else {
-        infoX = margin;
-        infoY = y + 10;
-        blockHeight = 40;
-      }
-    } catch (err) {
-      console.error("Media not added to PDF:", err);
-    }
-
-    // --- File Info ---
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text("File Information", infoX, infoY);
-
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(60);
-    const fileInfoStartY = infoY + 10;
-
-    doc.text(`File Name: ${result.fileMeta.name}`, infoX, fileInfoStartY);
-    doc.text(`Type: ${result.fileMeta.type}`, infoX, fileInfoStartY + lineHeight);
-    doc.text(
-      `Size: ${(result.fileMeta.size / 1024).toFixed(2)} KB`,
-      infoX,
-      fileInfoStartY + 2 * lineHeight
-    );
-    doc.text(
-      `Uploaded: ${new Date(result.timestamp).toLocaleString()}`,
-      infoX,
-      fileInfoStartY + 3 * lineHeight
-    );
-
-    y += blockHeight;
-    y += 10;
-
-    // --- Verification Summary ---
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.setTextColor(0);
-    doc.text("Verification Summary", margin, (y += 10));
-    doc.setDrawColor(0, 0, 0);
-    doc.line(margin, y + 2, 190, y + 2);
-
-    y += 10;
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(0);
-    doc.setFontSize(12);
-
-
-    doc.text(`Request ID: ${result.result.requestId}`, margin, (y += lineHeight));
-    doc.text(`Status: ${result.result.status}`, margin, (y += lineHeight));
-    if (result.result.score !== null) {
-      doc.text(
-        `Confidence Score: ${(result.result.score * 100).toFixed(1)}%`,
-        margin,
-        (y += lineHeight)
-      );
-    }
-
-    const models = result.result.models?.map((m: { name: string }) => m.name).join(", ") || "N/A";
-    doc.text(`Models Used: ${models}`, margin, (y += lineHeight));
-
-    y += 15;
-
-    // --- Models Section ---
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(0);
-    doc.setFontSize(14);
-    doc.text("Models", margin, (y += 10));
-    doc.setDrawColor(0, 0, 0);
-    doc.line(margin, y + 2, 190, y + 2);
-
-    y += 10;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(12);
-    doc.setTextColor(60);
-
-    const modelDetails = Array.isArray(result.result.models) ? result.result.models : [];
-
-    if (modelDetails.length === 0) {
-      doc.text("No model data available.", margin, (y += 6));
-    } else {
-      modelDetails.forEach((model: any, index: number) => {
-        if (y > pageHeight - footerHeight - 30) {
-          doc.addPage();
-          doc.addImage(headerImg, "PNG", 0, 0, pageWidth, headerHeight);
-          doc.addImage(footerImg, "PNG", 0, pageHeight - footerHeight, pageWidth, footerHeight);
-          y = margin + 10;
-        }
-
-        const modelName = model.name || "Unnamed Model";
-        const modelStatus = model.status || "Unknown";
-        const modelScore =
-          typeof model.score === "number" ? model.score.toFixed(2) : "N/A";
-
-        doc.text(`${index + 1}.Name: ${modelName}`, margin, (y += 5));
-        doc.text(`Status: ${modelStatus}`, margin + 3, (y += 5));
-        doc.text(`Score: ${(modelScore * 100).toFixed(1)}%`, margin + 3, (y += 5));
-
-        y += 4;
-      });
-    }
-
-    doc.save(`Gotham-Verification-${result.fileMeta.name || "report"}.pdf`);
-  };
 
   const isReadyToSubmit = files.length > 0 || urls.length > 0;
   // UPDATED: isSubmitDisabled now only checks if content is ready
   const isSubmitDisabled = isLoading || !isReadyToSubmit;
 
   return (
-    <div className="min-h-screen flex flex-col relative bg-card-gradient  border-t-customTeal text-white">
+    <div className="min-h-screen flex flex-col relative bg-slate-900 text-white">
       <Image
         src="/Vector.svg"
         alt="Blue Lines"
@@ -383,11 +236,11 @@ export default function GothamSection() {
       {/* Upload Section */}
       <main className="flex-1">
         <div className="mx-auto max-w-2xl px-6">
-          <Card className="shadow-lg border border-dashed border-customTeal bg-foreground/10">
+          <Card className="shadow-lg border border-dashed border-customTeal bg-slate-800">
             <CardContent className="p-8 space-y-10">
               
               {/* Upload */}
-              <div className="flex flex-col items-center justify-center border border-dashed border-muted-foreground/50 rounded-xl p-10 bg-foreground/20">
+              <div className="flex flex-col items-center justify-center border border-dashed border-muted-foreground/70 rounded-xl p-10 bg-slate-900/40">
                 <UploadCloud className="h-10 w-10 text-sky-500 mb-3" />
                 <p className="font-medium text-slate-200">Upload Media for Verification</p>
                 
@@ -439,7 +292,7 @@ export default function GothamSection() {
                     value={urlInput}
                     onChange={(e) => setUrlInput(e.target.value)}
                     placeholder="Paste media URL here..."
-                    className="flex-1 rounded-md border border-muted-foreground/50 px-4 py-2 text-sm bg-foreground/20 text-white focus:ring-2 focus:ring-sky-500"
+                    className="flex-1 rounded-md border border-slate-700 px-4 py-2 text-sm bg-slate-800 text-white focus:ring-2 focus:ring-sky-500"
                     disabled={files.length > 0}
                   />
                   <Button
@@ -531,9 +384,6 @@ export default function GothamSection() {
                 {/* Removed the red error message about email/phone being required */}
               </div>
             </CardContent>
-            <div className="flex justify-center mb-2">
-              <p className="text-sky-400 text-sm">Verification Fee: KSh {verificationFeeKsh} (via Paystack)</p>
-            </div>
 
             {/* Footer note */}
             <p className="text-xs text-slate-400 text-center pb-4">
@@ -550,23 +400,19 @@ export default function GothamSection() {
             max-h-[95vh] overflow-y-auto">
             
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-semibold text-sky-400">Verification Report</h2>
+              <h2 className="text-2xl font-semibold text-sky-400">
+                Verification Results
+              </h2>
               <Button
                 variant="ghost"
                 size="icon"
-                  onClick={() => {
-                    setResult(null);
-                    setFiles([]);
-                    setUrls([]);
-                    setPaymentCompleted(false);
-                  }}
-                 className="text-slate-400 hover:text-sky-400"
+                onClick={() => setResult(null)}
+                className="text-slate-400 hover:text-sky-400"
               >
                 <X className="h-5 w-5" />
               </Button>
             </div>
 
-            {/* Top Summary Section */}
             <div className="grid md:grid-cols-2 gap-8">
               {/* Media Preview (Simplified) */}
               <div className="flex flex-col items-center justify-center">
@@ -574,20 +420,9 @@ export default function GothamSection() {
                   <img
                     src={result.mediaPreview || result.fileUrl}
                     alt={result.fileMeta.name}
-                    className="w-80 h-64 object-cover rounded-lg border border-slate-700 shadow-lg"
+                    className="w-72 h-72 object-contain rounded-lg border border-slate-700"
                   />
                 )}
-
-                {result.fileMeta.type.startsWith("video/") && (
-                  <video
-                    controls
-                    className="w-72 h-72 object-contain rounded-lg border border-slate-700"
-                  >
-                    <source src={result.fileUrl || result.mediaPreview} type={result.fileMeta.type} />
-                    Your browser does not support the video tag.
-                  </video>
-                )}
-
                 {result.fileMeta.type.startsWith("audio/") && (
                     <p className="text-sm text-slate-400">Audio results available.</p>
                 )}
@@ -596,8 +431,8 @@ export default function GothamSection() {
                 </p>
               </div>
 
-              {/* Media Details */}
-              <div className="flex flex-col justify-between space-y-4">
+              {/* Results Summary */}
+              <div className="rounded-xl p-6 flex flex-col justify-between">
                 <div>
                   <h3 className="text-lg font-semibold mb-4">Overall Result</h3>
                   <div className="flex justify-between items-center mb-3">
@@ -605,8 +440,8 @@ export default function GothamSection() {
                       <p className="text-xs uppercase text-gray-400">Status</p>
                       <p
                         className={`text-lg font-bold ${result.result.status === "AUTHENTIC"
-                          ? "text-green-400"
-                          : "text-red-400"
+                            ? "text-green-400"
+                            : "text-red-400"
                           }`}
                       >
                         {result.result.status}
@@ -624,7 +459,7 @@ export default function GothamSection() {
 
                   <div className="w-full bg-neutral-700 h-2 rounded-full mb-4">
                     <div
-                      className={`h-2 rounded-full ${result.result.status === "AUTHENTIC" ? "bg-green-600" : "bg-red-500"}`}
+                      className="h-2 rounded-full bg-sky-500"
                       style={{
                         width: `${result.result.score ? result.result.score * 100 : 0
                           }%`,
@@ -643,7 +478,6 @@ export default function GothamSection() {
                         "N/A"}
                     </p>
                   </div>
-
                 </div>
               </div>
             </div>
@@ -671,9 +505,10 @@ export default function GothamSection() {
                     setUserEmail("");
                     setUserPhone("");
                   }}
-              >
-                Close
-              </Button>
+                >
+                  Close & Reset
+                </Button>
+              </div>
             </div>
           </div>
         </div>
