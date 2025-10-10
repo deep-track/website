@@ -4,7 +4,10 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 
+// Ensure this API route is server-only
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
 
 const rd = new RealityDefender({
   apiKey: process.env.REALITY_DEFENDER_API_KEY as string,
