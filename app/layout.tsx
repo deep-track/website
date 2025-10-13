@@ -139,8 +139,8 @@ export const metadata: Metadata = {
   category: 'Technology',
   classification: 'Business Software',
   other: {
-      rating: "safe for work",
-    },
+    rating: "safe for work",
+  },
 };
 
 export default function RootLayout({
@@ -155,92 +155,98 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <AOSInit />
+      <head>
+        <link rel="icon" type="image/png" href="/logos/deeptrack-high-resolution-logo-white" sizes="32x32" />
+        <link rel="canonical" href="https://www.deeptrack.io" />
+        <meta name="msvalidate.01" content="2160E1BD21CCA207AD7A15AC3E75834F" />
+        
+        {/* Enhanced Schema.org Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://www.deeptrack.io/#organization",
+                  "name": "DeepTrack",
+                  "url": "https://www.deeptrack.io",
+                  "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://www.deeptrack.io/logos/deeptrack-high-resolution-logo-white",
+                    "width": 180,
+                    "height": 60
+                  },
+                  "description": "AI-powered digital trust platform for deepfake detection, identity verification, and content authenticity.",
+                  "foundingDate": "2024",
+                  "sameAs": [
+                    "https://www.linkedin.com/company/deeptrck"
+                  ],
+                  "address": {
+                    "@type": "PostalAddress",
+                    "addressCountry": ["US", "KE"]
+                  },
+                  "contactPoint": {
+                    "@type": "ContactPoint",
+                    "email": "info@deeptrack.io",
+                    "contactType": "customer service"
+                  },
+                  "areaServed": ["WORLD"],
+                  "knowsAbout": [
+                    "Deepfake Detection",
+                    "AI Content Verification", 
+                    "Synthetic Media Analysis",
+                    "Digital Forensics",
+                    "Machine Learning",
+                    "Computer Vision"
+                  ],
+                  "makesOffer": [
+                    "Enterprise Deepfake Detection",
+                    "AI Media Verification",
+                    "Content Authentication",
+                    "Fraud Prevention Solutions"
+                  ]
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://www.deeptrack.io/#website",
+                  "url": "https://www.deeptrack.io",
+                  "name": "DeepTrack",
+                  "description": "AI Deepfake Detection & Content Verification Platform",
+                  "publisher": {
+                    "@id": "https://www.deeptrack.io/#organization"
+                  },
+                  "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "https://www.deeptrack.io/search?q={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                  }
+                },
+                {
+                  "@type": "SoftwareApplication",
+                  "name": "DeepTrack AI Deepfake Detection",
+                  "applicationCategory": "BusinessApplication",
+                  "operatingSystem": "Web",
+                  "description": "Enterprise-grade AI deepfake detection and content verification platform",
+                  "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "USD"
+                  },
+                  "creator": {
+                    "@id": "https://www.deeptrack.io/#organization"
+                  }
+                }
+              ]
+            })
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white overflow-x-hidden relative`}
       >
         <PostHogProvider>
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "Organization",
-                "@id": "https://www.deeptrack.io/#organization",
-                "name": "DeepTrack",
-                "url": "https://www.deeptrack.io",
-                "logo": {
-                  "@type": "ImageObject",
-                  "url": "https://www.deeptrack.io/logos/deeptrack-high-resolution-logo-white",
-                  "width": 180,
-                  "height": 60
-                },
-                "description": "Advanced AI deepfake detection and content verification solutions for global enterprises",
-                "foundingDate": "2024",
-                "sameAs": [],
-                "address": {
-                  "@type": "PostalAddress",
-                  "addressCountry": ["US", "KE"]
-                },
-                "areaServed": ["WORLD"],
-                "knowsAbout": [
-                  "Deepfake Detection",
-                  "AI Content Verification", 
-                  "Synthetic Media Analysis",
-                  "Digital Forensics",
-                  "Machine Learning",
-                  "Computer Vision"
-                ],
-                "makesOffer": [
-                  "Enterprise Deepfake Detection",
-                  "AI Media Verification",
-                  "Content Authentication",
-                  "Fraud Prevention Solutions"
-                ]
-              })
-            }}
-          />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "WebSite",
-                "@id": "https://www.deeptrack.io/#website",
-                "url": "https://www.deeptrack.io",
-                "name": "DeepTrack",
-                "description": "Enterprise-grade AI deepfake detection and content verification platform",
-                "publisher": {
-                  "@id": "https://www.deeptrack.io/#organization"
-                },
-                "potentialAction": [{
-                  "@type": "SearchAction",
-                  "target": "https://www.deeptrack.io/search?q={search_term_string}",
-                  "query-input": "required name=search_term_string"
-                }]
-              })
-            }}
-          />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "SoftwareApplication",
-                "name": "DeepTrack AI Deepfake Detection",
-                "applicationCategory": "BusinessApplication",
-                "operatingSystem": "Web",
-                "description": "Enterprise-grade AI deepfake detection and content verification platform",
-                "offers": {
-                  "@type": "Offer",
-                  "price": "0",
-                  "priceCurrency": "USD"
-                },
-                "creator": {
-                  "@id": "https://www.deeptrack.io/#organization"
-                }
-              })
-            }}
-          />
           <noscript>
             <iframe 
               src={`https://www.googletagmanager.com/ns.html?id=${process.env.GA_MEASUREMENT_ID!}`}
