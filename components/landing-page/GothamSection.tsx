@@ -500,7 +500,7 @@ export default function GothamSection() {
           <Card className="shadow-lg border border-dashed border-customTeal bg-foreground/10">
             <CardContent className="p-8 space-y-10">
               <div className="text-sm text-sky-400 flex items-start gap-2">
-                <AlertTriangle className="mt-2 w-4 h-4 mt-0.5" />
+                <AlertTriangle className="w-4 h-4 mt-0.5" />
                 <p>
                   If your image contains faces, please ensure they are clearly visible and not too small.
                 </p>
