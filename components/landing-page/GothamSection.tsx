@@ -172,35 +172,35 @@ export default function GothamSection() {
     }
   };
 
-const handlePaymentSuccess = async (response: PaystackReference) => {
-  setIsLoading(true);
-  setSuccessMessage("");
-  setError("");
+  const handlePaymentSuccess = async (response: PaystackReference) => {
+    setIsLoading(true);
+    setSuccessMessage("");
+    setError("");
 
-  try {
-    const verifyRes = await fetch("/api/verify-payment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reference: response.reference }),
-    });
+    try {
+      const verifyRes = await fetch("/api/verify-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reference: response.reference }),
+      });
 
-    const verifyData = await verifyRes.json();
+      const verifyData = await verifyRes.json();
 
-    if (verifyData.status === "success") {
-      setPaymentCompleted(true);
-      setSuccessMessage("Payment verified! You can now verify your media.");
-    } else {
-      setError("Payment verification failed! Please contact support.");
+      if (verifyData.status === "success") {
+        setPaymentCompleted(true);
+        setSuccessMessage("Payment verified! You can now verify your media.");
+      } else {
+        setError("Payment verification failed! Please contact support.");
+        setPaymentCompleted(false);
+      }
+    } catch (err) {
+      console.error("Payment verification error:", err);
+      setError("Error verifying payment. Please try again or contact support.");
       setPaymentCompleted(false);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (err) {
-    console.error("Payment verification error:", err);
-    setError("Error verifying payment. Please try again or contact support.");
-    setPaymentCompleted(false);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   // The rest of the handleDownloadPDF function remains the same...
   const handleDownloadPDF = async () => {
@@ -499,6 +499,13 @@ const handlePaymentSuccess = async (response: PaystackReference) => {
         <div className="mx-auto max-w-2xl px-6">
           <Card className="shadow-lg border border-dashed border-customTeal bg-foreground/10">
             <CardContent className="p-8 space-y-10">
+              <div className="text-sm text-sky-400 flex items-start gap-2">
+                <AlertTriangle className="mt-2 w-4 h-4 mt-0.5" />
+                <p>
+                  If your image contains faces, please ensure they are clearly visible and not too small.
+                </p>
+              </div>
+
 
               {/* Upload */}
               <div className="flex flex-col items-center justify-center border border-dashed border-muted-foreground/50 rounded-xl p-10 bg-foreground/20">
@@ -622,26 +629,25 @@ const handlePaymentSuccess = async (response: PaystackReference) => {
 
               {/* Action Button: Pay or Verify */}
               <div className="mt-6">
-{!paymentCompleted ? (
-  <div className="flex justify-center">
-    <PaystackButton
-      {...paystackConfig}
-      onSuccess={handlePaymentSuccess}
-      disabled={isSubmitDisabled}
-      className={`w-full bg-sky-600 hover:bg-sky-700 text-white py-2 px-4 rounded-md font-semibold transition-colors ${
-        isSubmitDisabled ? "opacity-50 cursor-not-allowed" : ""
-      }`}
-    />
-  </div>
-) : (
-  <Button
-    disabled={isLoading || !isReadyToSubmit}
-    onClick={handleVerify}
-    className="w-full bg-green-600 hover:bg-green-700 text-white mt-6"
-  >
-    {isLoading ? "Verifying..." : "Start Media Verification"}
-  </Button>
-)}
+                {!paymentCompleted ? (
+                  <div className="flex justify-center">
+                    <PaystackButton
+                      {...paystackConfig}
+                      onSuccess={handlePaymentSuccess}
+                      disabled={isSubmitDisabled}
+                      className={`w-full bg-sky-600 hover:bg-sky-700 text-white py-2 px-4 rounded-md font-semibold transition-colors ${isSubmitDisabled ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                    />
+                  </div>
+                ) : (
+                  <Button
+                    disabled={isLoading || !isReadyToSubmit}
+                    onClick={handleVerify}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white mt-6"
+                  >
+                    {isLoading ? "Verifying..." : "Start Media Verification"}
+                  </Button>
+                )}
                 {/* Removed the red error message about email/phone being required */}
               </div>
             </CardContent>
