@@ -55,14 +55,14 @@ export default function GothamSection() {
   // Paystack Configuration
   const publicKey =
     process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_xxxxxxxxxx";
-  const verificationFeeKsh = 100; // Example fee in KES
+  const verificationFeeKsh = 10; // Example fee in KES
 
   // Paystack config memoized - UPDATED FOR OPTIONAL CONTACTS
   const paystackConfig = useMemo(() => ({
     // Use userEmail if valid, otherwise use a placeholder email.
     // Paystack requires a non-empty, valid email string for all transactions.
     email: userEmail.includes('@') && userEmail.includes('.') ? userEmail : 'customer@email.com',
-    amount: verificationFeeKsh * 100, // Amount in kobo/cent
+    amount: verificationFeeKsh * 10, // Amount in kobo/cent
     currency: "KES",
     publicKey,
     text: `Pay KSh ${verificationFeeKsh} to Verify Media`,
