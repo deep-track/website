@@ -33,7 +33,7 @@ export default function GothamSection() {
     // ─── Constants ────────────────────────────────────────────────────
     const publicKey =
         process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_xxxxxxxxxx";
-    const verificationFeeKsh = 100;
+    const verificationFeeKsh = 10;
 
     // ─── Paystack Configuration ───────────────────────────────────────
     const paystackConfig: PaystackConfig = useMemo(
@@ -42,7 +42,7 @@ export default function GothamSection() {
                 userEmail.includes("@") && userEmail.includes(".")
                     ? userEmail
                     : "customer@email.com",
-            amount: verificationFeeKsh * 100,
+            amount: verificationFeeKsh * 10,
             currency: "KES",
             publicKey,
             text: `Pay KSh ${verificationFeeKsh} to Verify Media`,
