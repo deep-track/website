@@ -9,7 +9,7 @@ import TestimonialSection from '@/components/landing-page/testimonialSection';
 import { Metadata } from 'next';
 import WebinarSection from '@/components/landing-page/webinar-section';
 import PopupModal from '@/components/landing-page/informationPopUpModal';
-import GothamSection from '@/components/landing-page/GothamSection';
+import GothamSection from '@/components/landing-page/GothamSection/GothamSection';
 
 export const metadata: Metadata = {
   openGraph: {
