@@ -55,14 +55,14 @@ export default function GothamSection() {
   // Paystack Configuration
   const publicKey =
     process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_xxxxxxxxxx";
-  const verificationFeeKsh = 100; // Example fee in KES
+  const verificationFeeKsh = 1; // Example fee in KES
 
   // Paystack config memoized - UPDATED FOR OPTIONAL CONTACTS
   const paystackConfig = useMemo(() => ({
     // Use userEmail if valid, otherwise use a placeholder email.
     // Paystack requires a non-empty, valid email string for all transactions.
     email: userEmail.includes('@') && userEmail.includes('.') ? userEmail : 'customer@email.com',
-    amount: verificationFeeKsh * 100, // Amount in kobo/cent
+    amount: verificationFeeKsh * 1, // Amount in kobo/cent
     currency: "KES",
     publicKey,
     text: `Pay KSh ${verificationFeeKsh} to Verify Media`,
@@ -172,35 +172,35 @@ export default function GothamSection() {
     }
   };
 
-  const handlePaymentSuccess = async (response: PaystackReference) => {
-    setIsLoading(true);
-    setSuccessMessage("");
-    setError("");
+const handlePaymentSuccess = async (response: PaystackReference) => {
+  setIsLoading(true);
+  setSuccessMessage("");
+  setError("");
 
-    try {
-      const verifyRes = await fetch("/api/verify-payment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reference: response.reference }),
-      });
+  try {
+    const verifyRes = await fetch("/api/verify-payment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reference: response.reference }),
+    });
 
-      const verifyData = await verifyRes.json();
-      if (verifyData.status === "success") {
-        setPaymentCompleted(true);
-        setSuccessMessage("Payment verified! Starting media analysis...");
-        await handleVerify();
-      } else {
-        setError("Payment verification failed! Please contact support.");
-        setPaymentCompleted(false);
-      }
-    } catch (err) {
-      console.error("Payment verification error:", err);
-      setError("Error verifying payment. Please try again or contact support.");
+    const verifyData = await verifyRes.json();
+
+    if (verifyData.status === "success") {
+      setPaymentCompleted(true);
+      setSuccessMessage("Payment verified! You can now verify your media.");
+    } else {
+      setError("Payment verification failed! Please contact support.");
       setPaymentCompleted(false);
-    } finally {
-      setIsLoading(false);
     }
-  };
+  } catch (err) {
+    console.error("Payment verification error:", err);
+    setError("Error verifying payment. Please try again or contact support.");
+    setPaymentCompleted(false);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // The rest of the handleDownloadPDF function remains the same...
   const handleDownloadPDF = async () => {
@@ -622,26 +622,26 @@ export default function GothamSection() {
 
               {/* Action Button: Pay or Verify */}
               <div className="mt-6">
-                {!paymentCompleted ? (
-                  <div className="flex justify-center">
-                    <PaystackButton
-                      {...paystackConfig}
-                      onSuccess={handlePaymentSuccess}
-                      // Submission is only disabled if no file/URL is ready
-                      disabled={isSubmitDisabled}
-                      className={`w-full bg-sky-600 hover:bg-sky-700 text-white py-2 px-4 rounded-md font-semibold transition-colors ${isSubmitDisabled ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
-                    />
-                  </div>
-                ) : (
-                  <Button
-                    disabled={isLoading || !isReadyToSubmit}
-                    onClick={handleVerify}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white mt-6"
-                  >
-                    {isLoading ? "Verifying..." : "Re-Verify Media"}
-                  </Button>
-                )}
+{!paymentCompleted ? (
+  <div className="flex justify-center">
+    <PaystackButton
+      {...paystackConfig}
+      onSuccess={handlePaymentSuccess}
+      disabled={isSubmitDisabled}
+      className={`w-full bg-sky-600 hover:bg-sky-700 text-white py-2 px-4 rounded-md font-semibold transition-colors ${
+        isSubmitDisabled ? "opacity-50 cursor-not-allowed" : ""
+      }`}
+    />
+  </div>
+) : (
+  <Button
+    disabled={isLoading || !isReadyToSubmit}
+    onClick={handleVerify}
+    className="w-full bg-green-600 hover:bg-green-700 text-white mt-6"
+  >
+    {isLoading ? "Verifying..." : "Start Media Verification"}
+  </Button>
+)}
                 {/* Removed the red error message about email/phone being required */}
               </div>
             </CardContent>
