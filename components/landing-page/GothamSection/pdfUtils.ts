@@ -3,7 +3,7 @@ import autoTable from "jspdf-autotable";
 import { VerificationResult } from "./types";
 
 // Model Map for PDF generation
-const modelMap: Record<string, { label: string; description: string }> = {
+export const modelMap: Record<string, { label: string; description: string }> = {
   "rd-img-ensemble": {
     label: "Facial Analysis",
     description:
