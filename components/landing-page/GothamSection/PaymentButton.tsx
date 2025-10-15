@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { PaystackConfig } from "./types";
 
-// ✅ Dynamically import Paystack client-side only
+// Dynamically import Paystack client-side only
 const PaystackButton = dynamic(
   () => import("react-paystack").then((mod) => mod.PaystackButton),
   { ssr: false }
@@ -34,7 +34,7 @@ export default function PaymentButton({
   useEffect(() => {
     if (scriptLoaded.current) return;
 
-    // ✅ Check if Paystack script already exists
+    // Check if Paystack script already exists
     const existingScript = document.querySelector<HTMLScriptElement>(
       "script[src*='paystack']"
     );
@@ -44,15 +44,34 @@ export default function PaymentButton({
       return;
     }
 
-    // 🧩 Inject only once globally
+    // Inject Paystack script only once globally
     const script = document.createElement("script");
     script.src = "https://js.paystack.co/v1/inline.js";
     script.async = true;
     script.onload = () => {
       scriptLoaded.current = true;
-      console.log("✅ Paystack script loaded once");
+      console.log("Paystack script loaded once");
     };
     document.body.appendChild(script);
+
+    // Cleanup: remove Paystack iframes & any manually injected script on unmount
+    return () => {
+      // Remove manually added Paystack script
+      const manualScript = document.querySelector<HTMLScriptElement>(
+        "script[src*='paystack'][data-manual='true']"
+      );
+      if (manualScript) manualScript.remove();
+
+      // Clean up leftover Paystack iframes
+      const paystackIframes = Array.from(
+        document.querySelectorAll("iframe[id^='inline-']")
+      );
+
+      if (paystackIframes.length > 0) {
+        console.log(`🧹 Removed ${paystackIframes.length} leftover Paystack iframes.`);
+        paystackIframes.forEach((iframe) => iframe.remove());
+      }
+    };
   }, []);
 
   return (
