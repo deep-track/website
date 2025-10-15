@@ -1,7 +1,11 @@
+"use client";
+
 import dynamic from "next/dynamic";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PaystackConfig } from "./types";
 
+// Dynamically import Paystack (client-side only)
 const PaystackButton = dynamic(
   () => import("react-paystack").then((mod) => mod.PaystackButton),
   { ssr: false }
@@ -26,6 +30,24 @@ export default function PaymentButton({
 }: PaymentButtonProps) {
   const isSubmitDisabled = isLoading || !isReadyToSubmit;
 
+  // Clean up Paystack script on unmount to prevent buildup
+  useEffect(() => {
+    return () => {
+      const paystackScripts = Array.from(
+        document.querySelectorAll("script[src*='paystack']")
+      ) as HTMLScriptElement[];
+      paystackScripts.forEach((script) => script.remove());
+    };
+  }, []);
+
+  //Defensive check: Prevent Paystack from injecting twice
+  useEffect(() => {
+    const existing = document.querySelector(
+      "script[src*='paystack']"
+    ) as HTMLScriptElement | null;
+    if (existing) existing.dataset.loaded = "true";
+  }, []);
+
   return (
     <div className="mt-6">
       {!paymentCompleted ? (
@@ -48,14 +70,14 @@ export default function PaymentButton({
           {isLoading ? "Verifying..." : "Re-Verify Media"}
         </Button>
       )}
-      
-      <div className="flex justify-center mb-2">
-        {!isReadyToSubmit && (
+
+      {!isReadyToSubmit && (
+        <div className="flex justify-center mb-2">
           <p className="text-center text-sm text-sky-400">
             Please upload a file or add a URL to proceed.
           </p>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

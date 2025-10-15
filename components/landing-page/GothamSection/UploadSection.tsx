@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { UploadCloud, Video, ImageIcon, AudioWaveform, X, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -6,10 +7,10 @@ interface UploadSectionProps {
   files: File[];
   urls: string[];
   urlInput: string;
-  onFileChange: (file: File | null) => void; // ✅ simplified — single file only
+  onFileChange: (file: File | null) => void;
   onUrlInputChange: (value: string) => void;
   onUrlAdd: () => void;
-  onRemoveFile: () => void; // ✅ no index needed since only one file
+  onRemoveFile: () => void;
   onRemoveUrl: (index: number) => void;
 }
 
@@ -23,9 +24,19 @@ export default function UploadSection({
   onRemoveFile,
   onRemoveUrl,
 }: UploadSectionProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleSingleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFile = e.target.files?.[0] || null;
     onFileChange(newFile);
+  };
+
+  const handleFileRemove = () => {
+    onRemoveFile();
+    if (fileInputRef.current) {
+      // ✅ Clear file input memory to prevent buildup
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -48,6 +59,7 @@ export default function UploadSection({
         </div>
 
         <input
+          ref={fileInputRef}
           type="file"
           accept="image/*,video/*,audio/*"
           onChange={handleSingleFileChange}
@@ -57,21 +69,20 @@ export default function UploadSection({
         />
 
         <Button
-          onClick={() => document.getElementById("file-upload")?.click()}
+          onClick={() => fileInputRef.current?.click()}
           className="bg-sky-600 hover:bg-sky-700 text-white mt-4"
           disabled={urls.length > 0}
         >
           {files.length > 0 ? "Replace File" : "Browse File"}
         </Button>
 
-        {/* ✅ Only one file shown */}
         {files.length > 0 && (
           <div className="mt-4 w-full text-sm text-slate-300">
             <div className="flex justify-between bg-slate-800/40 rounded-md px-3 py-2">
               <span className="truncate">{files[0].name}</span>
               <X
                 className="h-4 w-4 text-red-400 cursor-pointer"
-                onClick={onRemoveFile}
+                onClick={handleFileRemove}
               />
             </div>
           </div>
