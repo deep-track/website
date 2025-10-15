@@ -1,11 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { PaystackConfig } from "./types";
 
-// Dynamically import Paystack (client-side only)
+// ✅ Dynamically import Paystack client-side only
 const PaystackButton = dynamic(
   () => import("react-paystack").then((mod) => mod.PaystackButton),
   { ssr: false }
@@ -29,23 +29,30 @@ export default function PaymentButton({
   onVerify,
 }: PaymentButtonProps) {
   const isSubmitDisabled = isLoading || !isReadyToSubmit;
+  const scriptLoaded = useRef(false);
 
-  // Clean up Paystack script on unmount to prevent buildup
   useEffect(() => {
-    return () => {
-      const paystackScripts = Array.from(
-        document.querySelectorAll("script[src*='paystack']")
-      ) as HTMLScriptElement[];
-      paystackScripts.forEach((script) => script.remove());
-    };
-  }, []);
+    if (scriptLoaded.current) return;
 
-  //Defensive check: Prevent Paystack from injecting twice
-  useEffect(() => {
-    const existing = document.querySelector(
+    // ✅ Check if Paystack script already exists
+    const existingScript = document.querySelector<HTMLScriptElement>(
       "script[src*='paystack']"
-    ) as HTMLScriptElement | null;
-    if (existing) existing.dataset.loaded = "true";
+    );
+
+    if (existingScript) {
+      scriptLoaded.current = true;
+      return;
+    }
+
+    // 🧩 Inject only once globally
+    const script = document.createElement("script");
+    script.src = "https://js.paystack.co/v1/inline.js";
+    script.async = true;
+    script.onload = () => {
+      scriptLoaded.current = true;
+      console.log("✅ Paystack script loaded once");
+    };
+    document.body.appendChild(script);
   }, []);
 
   return (
