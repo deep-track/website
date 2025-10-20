@@ -14,6 +14,17 @@ export interface ModelResult {
   score?: number;
 }
 
+// --- NEW INTERFACE: Details about the payment transaction ---
+export interface PaymentDetails {
+  localAmount: number; // e.g., 100 (in KES)
+  localCurrency: string; // e.g., "KES"
+  foreignAmount: number | null; // e.g., 0.78 (in USD, if cross-border card used)
+  foreignCurrency: string | null; // e.g., "USD"
+  channel: string; // e.g., "card", "mpesa"
+  cardType?: string; // e.g., "visa", "mastercard"
+}
+// -----------------------------------------------------------
+
 export interface VerificationResult {
   fileMeta: FileMeta;
   timestamp: string;
@@ -24,6 +35,10 @@ export interface VerificationResult {
   };
   mediaPreview?: string;
   fileUrl?: string;
+  
+  // --- UPDATED: Include the new payment details ---
+  paymentDetails: PaymentDetails;
+  // ------------------------------------------------
 }
 
 export interface PaystackConfig {

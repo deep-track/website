@@ -21,6 +21,8 @@ export default function ResultsModal({
 }: ResultsModalProps) {
     if (!result) return null;
 
+    const { paymentDetails } = result;
+
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-foreground border border-customTeal rounded-2xl p-6 w-full max-w-5xl text-neutral-100 shadow-2xl max-h-[95vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
@@ -152,6 +154,47 @@ export default function ResultsModal({
                     </div>
                 </div>
 
+                {/* --- UPDATED: Payment Summary Section --- */}
+                <div className="mt-10 p-4 border border-slate-700 rounded-lg bg-slate-800/40">
+                    <h3 className="text-lg font-semibold mb-3 border-b border-customTeal pb-2 text-sky-400">Payment Summary</h3>
+                    
+                    <div className="grid grid-cols-2 gap-2 text-sm text-slate-300">
+                        <p>
+                            <strong>Amount Charged:</strong>{" "}
+                            {/* Primary Display: Show Foreign amount (e.g., $0.78 USD) if available, otherwise show Local (e.g., KES 100) */}
+                            {paymentDetails.foreignAmount && paymentDetails.foreignCurrency ? (
+                                <span className="font-bold text-lg text-green-400">
+                                    {paymentDetails.foreignCurrency}{" "}
+                                    {paymentDetails.foreignAmount.toFixed(2)}
+                                </span>
+                            ) : (
+                                <span className="font-semibold text-white">
+                                    {paymentDetails.localCurrency}{" "}
+                                    {paymentDetails.localAmount.toFixed(2)}
+                                </span>
+                            )}
+                        </p>
+                        <p>
+                            <strong>Payment Channel:</strong>{" "}
+                            <span className="font-semibold capitalize">
+                                {paymentDetails.channel} {paymentDetails.cardType ? `(${paymentDetails.cardType})` : ''}
+                            </span>
+                        </p>
+                    </div>
+
+                    {/* Secondary Display: Show the local equivalent if foreign was primary */}
+                    {paymentDetails.foreignAmount && paymentDetails.foreignCurrency && (
+                        <p className="mt-2 text-xs italic text-slate-400">
+                            * Paid in local currency:{" "}
+                            <span className="font-semibold text-white">
+                                {paymentDetails.localCurrency}{" "}
+                                {paymentDetails.localAmount.toFixed(2)}
+                            </span>
+                        </p>
+                    )}
+                </div>
+                {/* --- END UPDATED SECTION --- */}
+
                 {/* Analysis Results Grid */}
                 <div className="mt-10">
                     <h3 className="text-lg font-semibold mb-4">Analysis Results</h3>
@@ -219,7 +262,7 @@ export default function ResultsModal({
 
                     <Button
                         variant="outline"
-                        className="border-slate-500 text-black hover:bg-red-600 hover:text-white"
+                        className="border-slate-500 text-white bg-slate-700/50 hover:bg-red-600 hover:text-white"
                         onClick={onReset}
                     >
                         Close & Reset

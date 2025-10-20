@@ -9,15 +9,32 @@ import ContactForm from "./ContactForm";
 import PaymentButton from "./PaymentButton";
 import FeatureCards from "./FeatureCards";
 import ResultsModal from "./ResultsModal";
-import { PaystackReference, PaystackConfig, VerificationResult } from "./types";
+import { 
+  PaystackReference, 
+  PaystackConfig, 
+  VerificationResult,
+} from "./types"; 
 import { handleDownloadPDF } from "./pdfUtils";
 import { AlertTriangle } from "lucide-react";
+
+// Define pricing constants
+const PRICES = {
+    // FIX APPLIED HERE: KES 100 is 10000 subunits (cents)
+    KES: { amount: 100, subunit: 10000, label: "KSh 100" }, 
+    USD: { amount: 0.78, subunit: 78, label: "$0.78" }, // 0.78 USD = 78 cents (Paystack subunit)
+};
 
 export default function GothamSection() {
   const [files, setFiles] = useState<File[]>([]);
   const [urlInput, setUrlInput] = useState("");
   const [urls, setUrls] = useState<string[]>([]);
-  const [result, setResult] = useState<VerificationResult | null>(null);
+  
+  // State for selected currency
+  const [selectedCurrency, setSelectedCurrency] = useState<"KES" | "USD">("KES");
+  
+  // The VerificationResult must now include PaymentDetails
+  const [result, setResult] = useState<VerificationResult | null>(null); 
+  
   const [isLoading, setIsLoading] = useState(false);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -27,8 +44,7 @@ export default function GothamSection() {
 
   const publicKey =
     process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_xxxxxxxxxx";
-  const verificationFeeKsh = 100;
-
+  
   const setError = (message: string) => {
     setErrorMessage(message);
     setSuccessMessage("");
@@ -39,8 +55,7 @@ export default function GothamSection() {
     setFiles([]);
     setUrls([]);
     setPaymentCompleted(false);
-    setUserEmail("");
-    setUserPhone("");
+    // Keep email and phone for convenience
   }, []);
 
   useEffect(() => {
@@ -60,20 +75,25 @@ export default function GothamSection() {
     };
   }, []);
 
-  const paystackConfig: PaystackConfig = useMemo(() => ({
-    email: userEmail || "customer@email.com",
-    amount: verificationFeeKsh * 100,
-    currency: "KES",
-    publicKey,
-    text: `Pay KSh ${verificationFeeKsh} to Verify Media`,
-    onClose: () => setErrorMessage("Payment cancelled or closed!"),
-    metadata: {
-      custom_fields: [
-        { display_name: "Customer Phone", variable_name: "customer_phone", value: userPhone },
-        { display_name: "Customer Email", variable_name: "customer_email", value: userEmail || "N/A" },
-      ],
-    },
-  }), [userEmail, userPhone, publicKey]);
+  const paystackConfig: PaystackConfig = useMemo(() => {
+    const price = PRICES[selectedCurrency];
+    
+    return {
+      email: userEmail || "customer@email.com",
+      // Paystack amount is in subunit (e.g., KES 100 * 100 = 10000; USD 0.78 * 100 = 78)
+      amount: price.subunit, 
+      currency: selectedCurrency,
+      publicKey,
+      text: `Pay ${price.label} to Verify Media`,
+      onClose: () => setErrorMessage("Payment cancelled or closed!"),
+      metadata: {
+        custom_fields: [
+          { display_name: "Customer Phone", variable_name: "customer_phone", value: userPhone },
+          { display_name: "Customer Email", variable_name: "customer_email", value: userEmail || "N/A" },
+        ],
+      },
+    };
+  }, [userEmail, userPhone, publicKey, selectedCurrency]);
 
   const handleFileChange = (file: File | null) => {
     handleReset();
@@ -95,7 +115,8 @@ export default function GothamSection() {
   const handleRemoveUrl = (index: number) =>
     setUrls((prev) => prev.filter((_, i) => i !== index));
 
-  const handleVerify = useCallback(async () => {
+  // Updated to accept and merge payment details from the verification step
+  const handleVerify = useCallback(async (paymentDetails: any = null) => {
     if (files.length === 0 && urls.length === 0) return;
 
     setIsLoading(true);
@@ -118,8 +139,24 @@ export default function GothamSection() {
       });
 
       if (!res.ok) throw new Error("Verification failed on backend");
+      
       const data = await res.json();
-      setResult(data);
+      
+      // Merge verification result with the payment details.
+      const finalResult: VerificationResult = {
+        ...data,
+        paymentDetails: paymentDetails || { 
+          // If no payment was done (e.g., debug), use the KES default
+          localAmount: PRICES.KES.amount, 
+          localCurrency: "KES", 
+          foreignAmount: null, 
+          foreignCurrency: null, 
+          channel: "M-Pesa/default" 
+        }
+      };
+
+      setResult(finalResult);
+
     } catch (err) {
       console.error("Verification error:", err);
       setError("Failed to verify media. Please try again.");
@@ -128,6 +165,7 @@ export default function GothamSection() {
     }
   }, [files, urls]);
 
+  // Updated to extract and pass paymentDetails from the server's verification response
   const handlePaymentSuccess = useCallback(
     async (response: PaystackReference) => {
       setIsLoading(true);
@@ -142,11 +180,16 @@ export default function GothamSection() {
         });
 
         const verifyData = await verifyRes.json();
-
+        
         if (verifyData.status === "success") {
           setPaymentCompleted(true);
           setSuccessMessage("Payment verified! Starting media analysis...");
-          await handleVerify();
+          
+          // Capture the structured paymentDetails returned by the API route
+          const paymentDetails = verifyData.paymentDetails;
+
+          // Proceed to media verification, passing payment details
+          await handleVerify(paymentDetails);
         } else {
           setError("Payment verification failed! Please contact support.");
           setPaymentCompleted(false);
@@ -218,6 +261,31 @@ export default function GothamSection() {
                 onEmailChange={setUserEmail}
                 onPhoneChange={setUserPhone}
               />
+                
+              {/* --- CURRENCY SELECTION UI --- */}
+              <div className="flex justify-center space-x-4">
+                <button
+                    onClick={() => setSelectedCurrency("KES")}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                        selectedCurrency === "KES"
+                        ? "bg-customTeal text-white shadow-md"
+                        : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                    }`}
+                >
+                    Pay {PRICES.KES.label} (Local)
+                </button>
+                <button
+                    onClick={() => setSelectedCurrency("USD")}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                        selectedCurrency === "USD"
+                        ? "bg-customTeal text-white shadow-md"
+                        : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                    }`}
+                >
+                    Pay {PRICES.USD.label} (International)
+                </button>
+              </div>
+              {/* --- END CURRENCY SELECTION UI --- */}
 
               <PaymentButton
                 paymentCompleted={paymentCompleted}
@@ -225,7 +293,8 @@ export default function GothamSection() {
                 isReadyToSubmit={isReadyToSubmit}
                 paystackConfig={paystackConfig}
                 onPaymentSuccess={handlePaymentSuccess}
-                onVerify={handleVerify}
+                // Only call handleVerify directly if payment is NOT required (i.e., skipping logic)
+                onVerify={() => handleVerify()} 
               />
             </CardContent>
 

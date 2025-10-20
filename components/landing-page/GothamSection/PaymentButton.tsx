@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { PaystackConfig } from "./types";
 
@@ -29,55 +28,18 @@ export default function PaymentButton({
   onVerify,
 }: PaymentButtonProps) {
   const isSubmitDisabled = isLoading || !isReadyToSubmit;
-  const scriptLoaded = useRef(false);
 
-  useEffect(() => {
-    if (scriptLoaded.current) return;
-
-    // Check if Paystack script already exists
-    const existingScript = document.querySelector<HTMLScriptElement>(
-      "script[src*='paystack']"
-    );
-
-    if (existingScript) {
-      scriptLoaded.current = true;
-      return;
-    }
-
-    // Inject Paystack script only once globally
-    const script = document.createElement("script");
-    script.src = "https://js.paystack.co/v1/inline.js";
-    script.async = true;
-    script.onload = () => {
-      scriptLoaded.current = true;
-      console.log("Paystack script loaded once");
-    };
-    document.body.appendChild(script);
-
-    // Cleanup: remove Paystack iframes & any manually injected script on unmount
-    return () => {
-      // Remove manually added Paystack script
-      const manualScript = document.querySelector<HTMLScriptElement>(
-        "script[src*='paystack'][data-manual='true']"
-      );
-      if (manualScript) manualScript.remove();
-
-      // Clean up leftover Paystack iframes
-      const paystackIframes = Array.from(
-        document.querySelectorAll("iframe[id^='inline-']")
-      );
-
-      if (paystackIframes.length > 0) {
-        console.log(`🧹 Removed ${paystackIframes.length} leftover Paystack iframes.`);
-        paystackIframes.forEach((iframe) => iframe.remove());
-      }
-    };
-  }, []);
+  /* Removed the manual useEffect for script injection and cleanup.
+  The 'react-paystack' library handles the script injection via 
+  the dynamic import and handles cleanup internally when the component unmounts.
+  Manual intervention often leads to conflicts or unnecessary complexity.
+  */
 
   return (
     <div className="mt-6">
       {!paymentCompleted ? (
         <div className="flex justify-center">
+          {/* PaystackButton is only rendered client-side due to dynamic import */}
           <PaystackButton
             {...paystackConfig}
             onSuccess={onPaymentSuccess}
@@ -88,6 +50,7 @@ export default function PaymentButton({
           />
         </div>
       ) : (
+        // Button displayed after successful payment, used to trigger media verification
         <Button
           disabled={isLoading || !isReadyToSubmit}
           onClick={onVerify}
