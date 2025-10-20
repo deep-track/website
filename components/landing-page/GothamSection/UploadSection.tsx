@@ -34,7 +34,7 @@ export default function UploadSection({
   const handleFileRemove = () => {
     onRemoveFile();
     if (fileInputRef.current) {
-      // ✅ Clear file input memory to prevent buildup
+      //  Clear file input memory to prevent buildup
       fileInputRef.current.value = "";
     }
   };
