@@ -58,6 +58,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    console.log("🔍 Verifying Paystack reference:", reference);
+
     const verifyResponse = await fetch(
       `https://api.paystack.co/transaction/verify/${reference}`,
       {
@@ -68,20 +70,45 @@ export async function POST(req: NextRequest) {
       }
     );
 
+    const verifyText = await verifyResponse.text(); // capture raw text
+    console.log("📡 RAW VERIFY RESPONSE:", verifyText);
+
     if (!verifyResponse.ok) {
-      const errorText = await verifyResponse.text();
-      console.error("Paystack API error response:", errorText);
+      console.error("❌ Paystack API request failed:", verifyResponse.status, verifyText);
       return NextResponse.json(
-        { status: "error", message: "Paystack verification failed" },
+        {
+          status: "error",
+          message: `Paystack API error (${verifyResponse.status})`,
+          raw: verifyText,
+        },
         { status: verifyResponse.status }
       );
     }
 
-    const verifyData = await verifyResponse.json();
-
-    if (!verifyData.status || !verifyData.data) {
+    // Try parsing JSON safely
+    let verifyData: any;
+    try {
+      verifyData = JSON.parse(verifyText);
+    } catch (err) {
+      console.error("❌ Failed to parse Paystack JSON:", err, verifyText);
       return NextResponse.json(
-        { status: "failed", message: verifyData.message || "Verification failed" },
+        {
+          status: "error",
+          message: "Invalid or non-JSON response from Paystack",
+          raw: verifyText,
+        },
+        { status: 502 }
+      );
+    }
+
+    // Validate response structure
+    if (!verifyData.status || !verifyData.data) {
+      console.error("⚠️ Paystack response missing expected fields:", verifyData);
+      return NextResponse.json(
+        {
+          status: "failed",
+          message: verifyData.message || "Unexpected Paystack response structure",
+        },
         { status: 400 }
       );
     }
@@ -100,7 +127,7 @@ export async function POST(req: NextRequest) {
 
       if (expectedSubunit > 0 && actualAmount !== expectedSubunit) {
         console.error(
-          `Amount mismatch: expected ${expectedSubunit} ${actualCurrency}, received ${actualAmount}`
+          `⚠️ Amount mismatch: expected ${expectedSubunit} ${actualCurrency}, received ${actualAmount}`
         );
         return NextResponse.json(
           {
@@ -112,12 +139,15 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const paymentDetails = extractPaymentDetails(
-        transactionData,
-        EXPECTED_AMOUNT_KES
-      );
+      const paymentDetails = extractPaymentDetails(transactionData, EXPECTED_AMOUNT_KES);
 
-      console.log("✅ Payment verified for:", reference, paymentDetails);
+      console.log("✅ Payment verified:", {
+        reference,
+        currency: actualCurrency,
+        amount: actualAmount,
+        paymentDetails,
+      });
+
       return NextResponse.json({
         status: "success",
         message: "Payment verified successfully.",
@@ -126,6 +156,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    console.warn("⚠️ Payment verification failed:", verifyData);
     return NextResponse.json(
       {
         status: "failed",
@@ -133,11 +164,12 @@ export async function POST(req: NextRequest) {
           transactionData.gateway_response ||
           verifyData.message ||
           "Payment not verified or incomplete.",
+        data: transactionData || null,
       },
       { status: 403 }
     );
   } catch (error: any) {
-    console.error("VERIFY-PAYMENT ERROR:", error);
+    console.error("💥 VERIFY-PAYMENT ERROR:", error);
     return NextResponse.json(
       {
         status: "error",
