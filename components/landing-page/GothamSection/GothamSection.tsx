@@ -268,7 +268,7 @@ export default function GothamSection() {
                     onClick={() => setSelectedCurrency("KES")}
                     className={`px-4 py-2 rounded-lg font-medium transition-all ${
                         selectedCurrency === "KES"
-                        ? "bg-customTeal text-white shadow-md"
+                        ? "bg-sky-600 text-white shadow-md"
                         : "bg-slate-700 text-slate-300 hover:bg-slate-600"
                     }`}
                 >
@@ -278,7 +278,7 @@ export default function GothamSection() {
                     onClick={() => setSelectedCurrency("USD")}
                     className={`px-4 py-2 rounded-lg font-medium transition-all ${
                         selectedCurrency === "USD"
-                        ? "bg-customTeal text-white shadow-md"
+                        ? "bg-sky-600 text-white shadow-md"
                         : "bg-slate-700 text-slate-300 hover:bg-slate-600"
                     }`}
                 >

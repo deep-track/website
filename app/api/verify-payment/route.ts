@@ -1,14 +1,15 @@
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const EXPECTED_AMOUNT_KES = 100;
 const EXPECTED_AMOUNT_USD_SUBUNIT = 78;
-const EXPECTED_AMOUNT_KES_SUBUNIT = 10000; 
+const EXPECTED_AMOUNT_KES_SUBUNIT = 10000;
 
 const extractPaymentDetails = (data: any, localKshAmount: number) => {
   const amountInSubunit = data.amount;
   const currency = data.currency || "KES";
-
   const initialAmountSubunit = data.log?.initial_amount;
   const initialCurrency = data.log?.initial_currency;
 
@@ -17,34 +18,25 @@ const extractPaymentDetails = (data: any, localKshAmount: number) => {
   let finalForeignCurrency = null;
 
   if (initialCurrency && initialCurrency !== currency) {
-    
     finalLocalAmount = localKshAmount;
-
     finalForeignAmount = initialAmountSubunit / 100;
     finalForeignCurrency = initialCurrency;
-
   } else if (currency === "KES") {
-    
-    finalLocalAmount = localKshAmount; 
-    
+    finalLocalAmount = localKshAmount;
   } else if (currency === "USD") {
-    
     finalLocalAmount = amountInSubunit / 100;
   } else {
-      
-      finalLocalAmount = amountInSubunit;
+    finalLocalAmount = amountInSubunit;
   }
-  
-  const paymentDetails = {
-    localAmount: finalLocalAmount, 
+
+  return {
+    localAmount: finalLocalAmount,
     localCurrency: currency,
     foreignAmount: finalForeignAmount,
     foreignCurrency: finalForeignCurrency,
     channel: data.channel || "Unknown",
-    cardType: data.authorization?.card_type || "N/A"
+    cardType: data.authorization?.card_type || "N/A",
   };
-
-  return paymentDetails;
 };
 
 export async function POST(req: NextRequest) {
@@ -75,80 +67,72 @@ export async function POST(req: NextRequest) {
         },
       }
     );
-    
+
     if (!verifyResponse.ok) {
-        const errorText = await verifyResponse.text();
-        console.error("Paystack API error response:", errorText);
-        return NextResponse.json(
-            {
-                status: "error",
-                message: `Paystack API request failed (${verifyResponse.status})`,
-            },
-            { status: verifyResponse.status }
-        );
+      const errorText = await verifyResponse.text();
+      console.error("Paystack API error response:", errorText);
+      return NextResponse.json(
+        { status: "error", message: "Paystack verification failed" },
+        { status: verifyResponse.status }
+      );
     }
 
-    let verifyData: any;
-    try {
-        verifyData = await verifyResponse.json();
-    } catch (parseErr) {
-        const rawText = await verifyResponse.text();
-        console.error("Paystack returned non-JSON response:", rawText);
-        return NextResponse.json(
-            {
-                status: "error",
-                message: "Invalid or unexpected response from Paystack API",
-            },
-            { status: 502 }
-        );
-    }
+    const verifyData = await verifyResponse.json();
 
+    if (!verifyData.status || !verifyData.data) {
+      return NextResponse.json(
+        { status: "failed", message: verifyData.message || "Verification failed" },
+        { status: 400 }
+      );
+    }
 
     const transactionData = verifyData.data;
-    const actualCurrency = transactionData?.currency;
-    const actualAmount = transactionData?.amount;
+    const actualCurrency = transactionData.currency;
+    const actualAmount = transactionData.amount;
 
-    if (verifyData.status && transactionData?.status === "success") {
-      
+    if (transactionData.status === "success") {
       let expectedSubunit = 0;
       if (actualCurrency === "KES") {
-          expectedSubunit = EXPECTED_AMOUNT_KES_SUBUNIT;
+        expectedSubunit = EXPECTED_AMOUNT_KES_SUBUNIT;
       } else if (actualCurrency === "USD") {
-          expectedSubunit = EXPECTED_AMOUNT_USD_SUBUNIT;
+        expectedSubunit = EXPECTED_AMOUNT_USD_SUBUNIT;
       }
-      
-      if (expectedSubunit > 0 && actualAmount !== expectedSubunit) {
-          console.error(`Amount Mismatch: Expected ${expectedSubunit} ${actualCurrency}, received ${actualAmount}`);
-          return NextResponse.json(
-              { 
-                  status: "failed", 
-                  message: "Payment amount mismatch. Transaction may be fraudulent or amount tampered." 
-              },
-              { status: 403 }
-          );
-      }
-      
-      const paymentDetails = extractPaymentDetails(transactionData, EXPECTED_AMOUNT_KES); 
 
-      console.log("Payment verified for:", reference, "Details:", paymentDetails);
-      
+      if (expectedSubunit > 0 && actualAmount !== expectedSubunit) {
+        console.error(
+          `Amount mismatch: expected ${expectedSubunit} ${actualCurrency}, received ${actualAmount}`
+        );
+        return NextResponse.json(
+          {
+            status: "failed",
+            message:
+              "Payment amount mismatch. Transaction may be fraudulent or altered.",
+          },
+          { status: 403 }
+        );
+      }
+
+      const paymentDetails = extractPaymentDetails(
+        transactionData,
+        EXPECTED_AMOUNT_KES
+      );
+
+      console.log("✅ Payment verified for:", reference, paymentDetails);
       return NextResponse.json({
         status: "success",
         message: "Payment verified successfully.",
         data: transactionData,
-        paymentDetails: paymentDetails,
+        paymentDetails,
       });
     }
 
-    console.warn("Payment verification failed:", verifyData);
     return NextResponse.json(
       {
         status: "failed",
         message:
-          transactionData?.gateway_response ||
+          transactionData.gateway_response ||
           verifyData.message ||
-          "Payment not verified or incomplete. Please try again.",
-        data: transactionData || null,
+          "Payment not verified or incomplete.",
       },
       { status: 403 }
     );
@@ -158,7 +142,9 @@ export async function POST(req: NextRequest) {
       {
         status: "error",
         message:
-          error instanceof Error ? error.message : "An unknown server error occurred",
+          error instanceof Error
+            ? error.message
+            : "An unknown server error occurred",
       },
       { status: 500 }
     );
