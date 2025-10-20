@@ -54,6 +54,12 @@ const leadership = [
     img: '/ian.jpeg',
     link: "https://ke.linkedin.com/in/ian-lumbasio"
   },
+   {
+    name: 'Brenda Gentry',
+    title: 'Advisor',
+    img: '/brenda.jpg',
+    link: "https://www.linkedin.com/in/brenda-gentry-4b56b087/"
+  },
 ];
 
 const productStack = [
