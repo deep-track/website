@@ -1,5 +1,3 @@
-export const runtime = "nodejs";
-
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -10,6 +8,7 @@ const EXPECTED_AMOUNT_KES_SUBUNIT = 10000;
 const extractPaymentDetails = (data: any, localKshAmount: number) => {
   const amountInSubunit = data.amount;
   const currency = data.currency || "KES";
+
   const initialAmountSubunit = data.log?.initial_amount;
   const initialCurrency = data.log?.initial_currency;
 
@@ -29,7 +28,7 @@ const extractPaymentDetails = (data: any, localKshAmount: number) => {
     finalLocalAmount = amountInSubunit;
   }
 
-  return {
+  const paymentDetails = {
     localAmount: finalLocalAmount,
     localCurrency: currency,
     foreignAmount: finalForeignAmount,
@@ -37,6 +36,8 @@ const extractPaymentDetails = (data: any, localKshAmount: number) => {
     channel: data.channel || "Unknown",
     cardType: data.authorization?.card_type || "N/A",
   };
+
+  return paymentDetails;
 };
 
 export async function POST(req: NextRequest) {
@@ -58,8 +59,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log("🔍 Verifying Paystack reference:", reference);
-
     const verifyResponse = await fetch(
       `https://api.paystack.co/transaction/verify/${reference}`,
       {
@@ -70,54 +69,38 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    const verifyText = await verifyResponse.text(); // capture raw text
-    console.log("📡 RAW VERIFY RESPONSE:", verifyText);
-
     if (!verifyResponse.ok) {
-      console.error("❌ Paystack API request failed:", verifyResponse.status, verifyText);
+      const errorText = await verifyResponse.text();
+      console.error("Paystack API error response:", errorText);
       return NextResponse.json(
         {
           status: "error",
-          message: `Paystack API error (${verifyResponse.status})`,
-          raw: verifyText,
+          message: `Paystack API request failed (${verifyResponse.status})`,
         },
         { status: verifyResponse.status }
       );
     }
 
-    // Try parsing JSON safely
     let verifyData: any;
     try {
-      verifyData = JSON.parse(verifyText);
-    } catch (err) {
-      console.error("❌ Failed to parse Paystack JSON:", err, verifyText);
+      verifyData = await verifyResponse.json();
+    } catch (parseErr) {
+      const rawText = await verifyResponse.text();
+      console.error("Paystack returned non-JSON response:", rawText);
       return NextResponse.json(
         {
           status: "error",
-          message: "Invalid or non-JSON response from Paystack",
-          raw: verifyText,
+          message: "Invalid or unexpected response from Paystack API",
         },
         { status: 502 }
       );
     }
 
-    // Validate response structure
-    if (!verifyData.status || !verifyData.data) {
-      console.error("⚠️ Paystack response missing expected fields:", verifyData);
-      return NextResponse.json(
-        {
-          status: "failed",
-          message: verifyData.message || "Unexpected Paystack response structure",
-        },
-        { status: 400 }
-      );
-    }
-
     const transactionData = verifyData.data;
-    const actualCurrency = transactionData.currency;
-    const actualAmount = transactionData.amount;
+    const actualCurrency = transactionData?.currency;
+    const actualAmount = transactionData?.amount;
 
-    if (transactionData.status === "success") {
+    if (verifyData.status && transactionData?.status === "success") {
       let expectedSubunit = 0;
       if (actualCurrency === "KES") {
         expectedSubunit = EXPECTED_AMOUNT_KES_SUBUNIT;
@@ -127,49 +110,47 @@ export async function POST(req: NextRequest) {
 
       if (expectedSubunit > 0 && actualAmount !== expectedSubunit) {
         console.error(
-          `⚠️ Amount mismatch: expected ${expectedSubunit} ${actualCurrency}, received ${actualAmount}`
+          `Amount Mismatch: Expected ${expectedSubunit} ${actualCurrency}, received ${actualAmount}`
         );
         return NextResponse.json(
           {
             status: "failed",
             message:
-              "Payment amount mismatch. Transaction may be fraudulent or altered.",
+              "Payment amount mismatch. Transaction may be fraudulent or amount tampered.",
           },
           { status: 403 }
         );
       }
 
-      const paymentDetails = extractPaymentDetails(transactionData, EXPECTED_AMOUNT_KES);
+      const paymentDetails = extractPaymentDetails(
+        transactionData,
+        EXPECTED_AMOUNT_KES
+      );
 
-      console.log("✅ Payment verified:", {
-        reference,
-        currency: actualCurrency,
-        amount: actualAmount,
-        paymentDetails,
-      });
+      console.log("Payment verified for:", reference, "Details:", paymentDetails);
 
       return NextResponse.json({
         status: "success",
         message: "Payment verified successfully.",
         data: transactionData,
-        paymentDetails,
+        paymentDetails: paymentDetails,
       });
     }
 
-    console.warn("⚠️ Payment verification failed:", verifyData);
+    console.warn("Payment verification failed:", verifyData);
     return NextResponse.json(
       {
         status: "failed",
         message:
-          transactionData.gateway_response ||
+          transactionData?.gateway_response ||
           verifyData.message ||
-          "Payment not verified or incomplete.",
+          "Payment not verified or incomplete. Please try again.",
         data: transactionData || null,
       },
       { status: 403 }
     );
   } catch (error: any) {
-    console.error("💥 VERIFY-PAYMENT ERROR:", error);
+    console.error("VERIFY-PAYMENT ERROR:", error);
     return NextResponse.json(
       {
         status: "error",
