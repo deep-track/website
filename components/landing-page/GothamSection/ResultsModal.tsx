@@ -41,52 +41,12 @@ export default function ResultsModal({
                 </div>
 
                 {/* Top Summary Section */}
-                <div className="grid md:grid-cols-2 gap-8">
-                    {/* Media Preview */}
-                    <div className="flex flex-col items-center justify-center space-y-3">
-                        {result.fileMeta.type.startsWith("image/") && (
-                            <img
-                                src={result.mediaPreview || result.fileUrl}
-                                alt={result.fileMeta.name}
-                                className="w-80 h-64 object-cover rounded-lg border border-slate-700 shadow-lg"
-                            />
-                        )}
+                <div className="grid md:grid-cols-2 gap-8">                        
 
-                        {result.fileMeta.type.startsWith("video/") && (
-                            <video
-                                controls
-                                className="w-80 h-64 rounded-lg border border-slate-700 shadow-lg"
-                            >
-                                <source
-                                    src={result.mediaPreview || result.fileUrl}
-                                    type={result.fileMeta.type}
-                                />
-                            </video>
-                        )}
-
-                        {result.fileMeta.type.startsWith("audio/") && (
-                            <div className="w-80 p-4 border border-slate-700 rounded-lg bg-slate-900/40 text-center">
-                                <audio controls className="w-full">
-                                    <source
-                                        src={result.mediaPreview || result.fileUrl}
-                                        type={result.fileMeta.type}
-                                    />
-                                </audio>
-                                <p className="mt-2 text-sm text-slate-400">Audio Preview</p>
-                            </div>
-                        )}
-
-                        <p className="text-sm text-slate-400">
-                            Media Name: {result.fileMeta.name}
-                        </p>
-                    </div>
-
-                    {/* Media Details */}
+                    {/* Media confidence */}
                     <div className="flex flex-col justify-between space-y-4">
                         <div>
-                            <h3 className="text-lg font-semibold mb-4">Overall Result</h3>
-
-                            <div className="flex justify-between items-center mb-3">
+                            <div className="flex justify-between items-center mt-2 mb-3">
                                 <div>
                                     <p className="text-xs uppercase text-gray-400">Status</p>
                                     <p
@@ -121,6 +81,16 @@ export default function ResultsModal({
                                 ></div>
                             </div>
 
+                        </div>
+                    </div>
+                      {/* Media Details */}
+
+                                        <div className="flex flex-col items-center justify-center space-y-3">
+                                                <div>
+                            <h3 className="text-lg font-semibold mb-4">File Details</h3>
+
+
+
                             <div className="grid grid-cols-2 gap-2 text-slate-300">
                                 <p>
                                     <strong>File Name:</strong> {result.fileMeta.name}
@@ -151,7 +121,9 @@ export default function ResultsModal({
                                 </p>
                             </div>
                         </div>
+
                     </div>
+
                 </div>
 
                 {/* --- UPDATED: Payment Summary Section --- */}

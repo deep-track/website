@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 
 const EXPECTED_AMOUNT_KES = 100;
-const EXPECTED_AMOUNT_USD_SUBUNIT = 78;
+const EXPECTED_AMOUNT_USD_SUBUNIT = 200;
 const EXPECTED_AMOUNT_KES_SUBUNIT = 10000;
 
 const extractPaymentDetails = (data: any, localKshAmount: number) => {
@@ -28,7 +29,7 @@ const extractPaymentDetails = (data: any, localKshAmount: number) => {
     finalLocalAmount = amountInSubunit;
   }
 
-  const paymentDetails = {
+  return {
     localAmount: finalLocalAmount,
     localCurrency: currency,
     foreignAmount: finalForeignAmount,
@@ -36,8 +37,6 @@ const extractPaymentDetails = (data: any, localKshAmount: number) => {
     channel: data.channel || "Unknown",
     cardType: data.authorization?.card_type || "N/A",
   };
-
-  return paymentDetails;
 };
 
 export async function POST(req: NextRequest) {
@@ -72,6 +71,8 @@ export async function POST(req: NextRequest) {
     if (!verifyResponse.ok) {
       const errorText = await verifyResponse.text();
       console.error("Paystack API error response:", errorText);
+      const err = new Error(`Paystack API request failed (${verifyResponse.status})`);
+      Sentry.captureException(err);
       return NextResponse.json(
         {
           status: "error",
@@ -87,6 +88,7 @@ export async function POST(req: NextRequest) {
     } catch (parseErr) {
       const rawText = await verifyResponse.text();
       console.error("Paystack returned non-JSON response:", rawText);
+      Sentry.captureException(parseErr);
       return NextResponse.json(
         {
           status: "error",
@@ -109,9 +111,9 @@ export async function POST(req: NextRequest) {
       }
 
       if (expectedSubunit > 0 && actualAmount !== expectedSubunit) {
-        console.error(
-          `Amount Mismatch: Expected ${expectedSubunit} ${actualCurrency}, received ${actualAmount}`
-        );
+        const errMsg = `Amount Mismatch: Expected ${expectedSubunit} ${actualCurrency}, received ${actualAmount}`;
+        console.error(errMsg);
+        Sentry.captureMessage(errMsg, "warning");
         return NextResponse.json(
           {
             status: "failed",
@@ -122,22 +124,20 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const paymentDetails = extractPaymentDetails(
-        transactionData,
-        EXPECTED_AMOUNT_KES
-      );
-
+      const paymentDetails = extractPaymentDetails(transactionData, EXPECTED_AMOUNT_KES);
       console.log("Payment verified for:", reference, "Details:", paymentDetails);
 
       return NextResponse.json({
         status: "success",
         message: "Payment verified successfully.",
         data: transactionData,
-        paymentDetails: paymentDetails,
+        paymentDetails,
       });
     }
 
     console.warn("Payment verification failed:", verifyData);
+    Sentry.captureMessage("Payment verification failed: " + reference, "warning");
+
     return NextResponse.json(
       {
         status: "failed",
@@ -150,14 +150,12 @@ export async function POST(req: NextRequest) {
       { status: 403 }
     );
   } catch (error: any) {
+    Sentry.captureException(error); // <-- capture any unexpected errors
     console.error("VERIFY-PAYMENT ERROR:", error);
     return NextResponse.json(
       {
         status: "error",
-        message:
-          error instanceof Error
-            ? error.message
-            : "An unknown server error occurred",
+        message: error instanceof Error ? error.message : "An unknown server error occurred",
       },
       { status: 500 }
     );

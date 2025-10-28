@@ -117,25 +117,6 @@ export const handleDownloadPDF = (result: VerificationResult) => {
     (infoY += lineHeight)
   );
 
-  // --- Uploaded Media Preview (right side) ---
-  if (result.fileMeta?.type?.startsWith("image/")) {
-    try {
-      const imgX = pageWidth - 80;
-      doc.addImage(
-        result.mediaPreview || result.fileUrl || "",
-        "JPEG",
-        imgX,
-        infoStartY,
-        60,
-        55
-      );
-    } catch (err) {
-      console.error("Image not added to PDF:", err);
-    }
-  }
-
-  y += 60;
-
   // --- Overall Result ---
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);

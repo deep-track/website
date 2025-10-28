@@ -16,12 +16,13 @@ import {
 } from "./types"; 
 import { handleDownloadPDF } from "./pdfUtils";
 import { AlertTriangle } from "lucide-react";
+import * as Sentry from "@sentry/nextjs";
 
 // Define pricing constants
 const PRICES = {
     // FIX APPLIED HERE: KES 100 is 10000 subunits (cents)
     KES: { amount: 100, subunit: 10000, label: "KSh 100" }, 
-    USD: { amount: 0.78, subunit: 78, label: "$0.78" }, // 0.78 USD = 78 cents (Paystack subunit)
+    USD: { amount: 2, subunit: 200, label: "$2" }, // 0.78 USD = 78 cents (Paystack subunit)
 };
 
 export default function GothamSection() {
@@ -159,6 +160,7 @@ export default function GothamSection() {
 
     } catch (err) {
       console.error("Verification error:", err);
+      Sentry.captureException(err);
       setError("Failed to verify media. Please try again.");
     } finally {
       setIsLoading(false);
@@ -196,6 +198,7 @@ export default function GothamSection() {
         }
       } catch (err) {
         console.error("Payment verification error:", err);
+        Sentry.captureException(err);
         setError("Error verifying payment. Please try again or contact support.");
         setPaymentCompleted(false);
       } finally {

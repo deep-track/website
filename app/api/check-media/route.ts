@@ -3,6 +3,7 @@ import { RealityDefender } from "@realitydefender/realitydefender";
 import fs from "fs";
 import path from "path";
 import os from "os";
+import * as Sentry from "@sentry/nextjs";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -28,10 +29,7 @@ export async function POST(req: Request) {
       const file = formData.get("media") as File;
 
       if (!file) {
-        return NextResponse.json(
-          { error: "No file uploaded" },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
       }
 
       fileName = file.name;
@@ -40,16 +38,20 @@ export async function POST(req: Request) {
       fileBuffer = Buffer.from(await file.arrayBuffer());
 
       const tempPath = path.join(os.tmpdir(), fileName);
-      await fs.promises.writeFile(tempPath, fileBuffer);
+      try {
+        await fs.promises.writeFile(tempPath, fileBuffer);
+        console.log(`Temp file saved at: ${tempPath}`);
 
-      console.log(`Temp file saved at: ${tempPath}`);
+        rdResult = await rd.detect({ filePath: tempPath });
+        console.log("RD status:", rdResult?.status, "score:", rdResult?.score);
+      } catch (err) {
+        Sentry.captureException(err); // <-- Capture Sentry error
+        throw err;
+      } finally {
+        await fs.promises.unlink(tempPath).catch(() => {});
+      }
 
-      rdResult = await rd.detect({ filePath: tempPath });
-      console.log("RD status:", rdResult?.status, "score:", rdResult?.score);
-
-      await fs.promises.unlink(tempPath);
-
-      // --- Handle URL Submission ---
+    // --- Handle URL Submission ---
     } else if (contentType.includes("application/json")) {
       const { url } = await req.json();
       if (!url) {
@@ -59,24 +61,27 @@ export async function POST(req: Request) {
       console.log(`Downloading remote media from: ${url}`);
       const res = await fetch(url);
       if (!res.ok) {
-        throw new Error(`Failed to download media from URL: ${url}`);
+        const error = new Error(`Failed to download media from URL: ${url}`);
+        Sentry.captureException(error);
+        throw error;
       }
 
       const arrayBuffer = await res.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      const tempPath = path.join(
-        os.tmpdir(),
-        path.basename(new URL(url).pathname) || "remote-media"
-      );
-      await fs.promises.writeFile(tempPath, buffer);
+      const tempPath = path.join(os.tmpdir(), path.basename(new URL(url).pathname) || "remote-media");
+      try {
+        await fs.promises.writeFile(tempPath, buffer);
+        console.log(`Temp file saved from URL: ${tempPath}`);
 
-      console.log(`Temp file saved from URL: ${tempPath}`);
-
-      rdResult = await rd.detect({ filePath: tempPath });
-      console.log("RD status:", rdResult?.status, "score:", rdResult?.score);
-
-      await fs.promises.unlink(tempPath);
+        rdResult = await rd.detect({ filePath: tempPath });
+        console.log("RD status:", rdResult?.status, "score:", rdResult?.score);
+      } catch (err) {
+        Sentry.captureException(err);
+        throw err;
+      } finally {
+        await fs.promises.unlink(tempPath).catch(() => {});
+      }
 
       fileName = path.basename(new URL(url).pathname) || "remote-media";
       fileType = rdResult?.mimeType || "application/octet-stream";
@@ -84,10 +89,6 @@ export async function POST(req: Request) {
     }
 
     const responsePayload = {
-      mediaPreview:
-        fileBuffer && fileType.startsWith("image/") && fileSize < 2_000_000
-          ? `data:${fileType};base64,${fileBuffer.toString("base64")}`
-          : null,
       fileMeta: { name: fileName, type: fileType, size: fileSize },
       result: {
         requestId: rdResult?.requestId ?? "N/A",
@@ -100,7 +101,9 @@ export async function POST(req: Request) {
     };
 
     return NextResponse.json(responsePayload);
+
   } catch (error: any) {
+    Sentry.captureException(error); // <-- capture unhandled errors
     console.error("Error in check-media:", error);
     return NextResponse.json(
       { error: error.message || "Internal Server Error" },
