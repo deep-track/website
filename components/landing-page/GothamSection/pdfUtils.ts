@@ -103,6 +103,8 @@ export const handleDownloadPDF = (result: VerificationResult) => {
   doc.setFont("helvetica", "normal");
   doc.setTextColor(60);
 
+  y += 40;
+ 
   infoY += 10;
   doc.text(`File Name: ${result.fileMeta?.name || "N/A"}`, margin, infoY);
   doc.text(`Type: ${result.fileMeta?.type || "N/A"}`, margin, (infoY += lineHeight));
