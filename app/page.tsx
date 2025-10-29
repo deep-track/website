@@ -11,31 +11,7 @@ import { Metadata } from 'next';
 import WebinarSection from '@/components/landing-page/webinar-section';
 import PopupModal from '@/components/landing-page/informationPopUpModal';
 import GothamSection from '@/components/landing-page/GothamSection/GothamSection';
-import * as Sentry from "@sentry/nextjs";
-
-class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
-  constructor(props: any) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: any, errorInfo: any) {
-    Sentry.captureException(error);
-    console.error("React render error:", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <div className="text-red-500">Something went wrong. Please try again.</div>;
-    }
-    return this.props.children;
-  }
-}
-
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 
 export const metadata: Metadata = {
