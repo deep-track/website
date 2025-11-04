@@ -32,7 +32,7 @@ export default function CookieBanner() {
       <div className='text-center '>
         <Link href='/'>
           <p className='text-black'>
-          We use cookies at DeepTrack to enhance your browsing experience on our page. By continuing to explore our site, you agree to our use of cookies.
+          We use cookies at deeptrack to enhance your browsing experience on our page. By continuing to explore our site, you agree to our use of cookies.
           </p>
         </Link>
       </div>

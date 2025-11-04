@@ -20,9 +20,7 @@ export default function Footer() {
               <Link href="/audio-authentication" className="text-gray-400 hover:text-white transition-colors">
                 Audio Authentication
               </Link>
-              <Link href="/text-detection" className="text-gray-400 hover:text-white transition-colors">
-                Realtime Fact Checking
-              </Link>
+             
               <Link href="#" className="text-gray-400 hover:text-white transition-colors">
                 Disinformation
               </Link>

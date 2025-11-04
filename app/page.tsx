@@ -12,7 +12,7 @@ import WebinarSection from '@/components/landing-page/webinar-section';
 import PopupModal from '@/components/landing-page/informationPopUpModal';
 import GothamSection from '@/components/landing-page/GothamSection/GothamSection';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-
+import InsuranceSection from "@/components/landing-page/InsuranceSection";
 
 export const metadata: Metadata = {
   openGraph: {

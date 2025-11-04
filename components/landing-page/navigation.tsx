@@ -61,6 +61,12 @@ const components: { title: string; href: string; description: string }[] = [
     title: 'Executive Identity Shielding',
     href: '/executive-identity-shielding',
     description: 'Securely shield your executive identity.',
+  },
+  // NEW: Insurance Use Case
+  {
+    title: 'Insurance Use Case',
+    href: '/insurance-use-case',
+    description: 'AI-powered fraud detection for automotive claims and deepfake prevention.',
   }
   
 ]
@@ -100,9 +106,7 @@ export function Navigation() {
                 <ListItem href="/audio-authentication" title="Audio Authentication">
                   Detect deepfakes and verify audio recordings with voice analysis technology.
                 </ListItem>
-                <ListItem href="/text-detection" title="Text Detection">
-                  Identify AI generated content and analyze writing patterns for authenticity.
-                </ListItem>
+               
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
@@ -112,7 +116,7 @@ export function Navigation() {
             <NavigationMenuTrigger className="bg-black text-white">Use Cases</NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                <li className="row-span-4">
+                <li className="row-span-5"> {/* Changed from row-span-4 to row-span-5 */}
                   <NavigationMenuLink asChild>
                     <Link
                       className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"

@@ -100,7 +100,7 @@ const MediaUseCase = () => {
               content={[
                   {
                       subtitle: 'Proactive Integrity Checks & Deepfake Prevention',
-                      description: 'DeepTrack automates the review process with advanced deepfake detection software, flagging discrepancies and providing clear audit trails for verified content. Our deepfake identification tool ensures long-term credibility and trust with audiences while providing comprehensive deepfake misinformation detection for publishers.',
+                      description: 'deeptrack automates the review process with advanced deepfake detection software, flagging discrepancies and providing clear audit trails for verified content. Our deepfake identification tool ensures long-term credibility and trust with audiences while providing comprehensive deepfake misinformation detection for publishers.',
                   },
                   {
                       subtitle: 'Advanced Deepfake Monitoring Solution',

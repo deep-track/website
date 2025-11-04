@@ -39,11 +39,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly' as const,
       priority: 0.8,
     },
-    {
-      route: '/text-detection',
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    },
+   
   ]
 
   // Executive & Specialized Routes

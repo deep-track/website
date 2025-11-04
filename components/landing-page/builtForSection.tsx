@@ -19,6 +19,12 @@ const solutionData = [
     title: 'Media',
     description: 'Maintain trust and credibility by effectively verifying user-generated content. Detect inaccuracies, uphold editorial standards, and ensure your platform remains a reliable source of information for your audience.',
     learnMoreUrl: '/media-use-case'
+  },
+  {
+    id: 4, 
+    title: 'Insurance',
+    description: 'Combat $80B+ in annual insurance fraud with AI-powered deepfake detection and claims verification. Detect synthetic claims, manipulated documents, and prevent fraudulent payouts with real-time multimodal analysis and automated virtual inspections.',
+    learnMoreUrl: '/insurance-use-case'
   }
 ];
 

@@ -44,7 +44,7 @@ const ImageAuthenticationPage = () => {
           description="Sophisticated AI-generated image forgeries are becoming increasingly accessible and widespread worldwide, posing significant risks across industries in the USA, Europe, Asia, and emerging markets. Deeptrack advanced multi-layer detection shields global organizations from deepfake-driven fraud, identity theft, and disinformation with enterprise-grade accuracy."
           statistics={[
             { value: '85%', description: 'of organizations globally are vulnerable to deepfake-enabled fraud across North America, Europe, and Asia-Pacific' },
-            { value: '75%', description: 'of African businesses face rising threats from manipulated images and misinformation, with similar trends in emerging markets worldwide' },
+           { value: '75%', description: 'of businesses worldwide face rising threats from manipulated images and misinformation' },
           ]}
         />
         <Image

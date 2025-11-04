@@ -28,8 +28,8 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL('https://www.deeptrack.io'),
   title: {
-    default: 'DeepTrack - AI Deepfake Detection & Content Verification Platform',
-    template: '%s | DeepTrack AI Deepfake Detection'
+    default: 'deeptrack - AI Deepfake Detection & Content Verification Platform',
+    template: '%s | deeptrack AI Deepfake Detection'
   },
   description: 'Enterprise deepfake detection software and AI-powered content verification tools for global businesses. Detect manipulated media, prevent misinformation, and ensure content credibility worldwide.',
   keywords: [
@@ -39,6 +39,15 @@ export const metadata: Metadata = {
     'deepfake verification tool', 'detect deepfakes online', 'enterprise deepfake detection', 'video deepfake detector',
     'deepfake image detection', 'deepfake prevention software', 'detect manipulated media', 'deepfake analysis tool',
     'deepfake authentication', 'AI-powered deepfake detection', 'deepfake scam protection', 'deepfake monitoring solution',
+
+    // Insurance & Fraud Detection (20) - NEW SECTION
+    'insurance fraud detection', 'AI fraud detection insurance', 'deepfake detection for insurance',
+    'automotive claims fraud detection', 'synthetic identity detection', 'document forgery detection',
+    'insurance fraud prevention', 'AI claims processing', 'deepfake insurance fraud', 'vehicle damage verification',
+    'insurance fraud detection software', 'AI-powered claims verification', 'fraud detection for reinsurers',
+    'insurance compliance AI', 'automotive insurance fraud', 'deepfake detection insurance claims',
+    'AI fraud prevention insurance', 'insurance risk assessment AI', 'claims fraud detection system',
+    'insurance document verification', 'vehicle inspection AI',
 
     // Media & Journalism (20)
     'deepfake detection for media', 'deepfake protection for journalists', 'AI news verification tools',
@@ -110,14 +119,14 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://www.deeptrack.io',
     siteName: 'DeepTrack',
-    title: 'DeepTrack - AI Deepfake Detection & Content Verification Platform',
+    title: 'deeptrack - AI Deepfake Detection & Content Verification Platform',
     description: 'Global enterprise deepfake detection software and AI-powered content verification tools for media, finance, and government sectors worldwide.',
     images: [
       {
         url: '/deeptrackOG.png',
         width: 1200,
         height: 630,
-        alt: 'DeepTrack - AI Deepfake Detection & Content Verification Platform',
+        alt: 'deeptrack - AI Deepfake Detection & Content Verification Platform',
         type: 'image/png',
       },
     ],
@@ -199,13 +208,17 @@ export default function RootLayout({
                     "Synthetic Media Analysis",
                     "Digital Forensics",
                     "Machine Learning",
-                    "Computer Vision"
+                    "Computer Vision",
+                    "Insurance Fraud Detection", // NEW
+                    "Claims Verification AI" // NEW
                   ],
                   "makesOffer": [
                     "Enterprise Deepfake Detection",
                     "AI Media Verification",
                     "Content Authentication",
-                    "Fraud Prevention Solutions"
+                    "Fraud Prevention Solutions",
+                    "Insurance Fraud Detection AI", // NEW
+                    "Automotive Claims Verification" // NEW
                   ]
                 },
                 {

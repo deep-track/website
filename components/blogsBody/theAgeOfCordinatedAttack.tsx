@@ -142,7 +142,7 @@ const TheAgeOfCoordinatedAttacks: React.FC = () => {
       </p>
 
       <h2 className="text-2xl font-semibold mt-8 mb-4 border-b border-gray-700 pb-2 md:text-4xl">
-        How Deeptrack Defends Against Coordinated Deepfake Campaigns
+        How deeptrack Defends Against Coordinated Deepfake Campaigns
       </h2>
 
       <p className="text-lg text-gray-300 leading-loose text-justify md:text-lg">

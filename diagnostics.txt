@@ -1,0 +1,57 @@
+===== Next build (npm run build) =====
+
+> captureai-ui@0.1.0 build
+> next build --turbopack
+
+[@sentry/nextjs] WARNING: You are using the Sentry SDK with Turbopack. The Sentry SDK is compatible with Turbopack on Next.js version 15.4.1 or later. You are currently on 15.3.1. Please upgrade to a newer Next.js version to use the Sentry SDK with Turbopack.
+[@sentry/nextjs] WARNING: You are using the Sentry SDK with Turbopack. The Sentry SDK is compatible with Turbopack on Next.js version 15.4.1 or later. You are currently on 15.3.1. Please upgrade to a newer Next.js version to use the Sentry SDK with Turbopack.
+   ▲ Next.js 15.3.1 (Turbopack)
+   - Experiments (use with caution):
+     · clientTraceMetadata
+
+   Creating an optimized production build ...
+[@sentry/nextjs] WARNING: You are using the Sentry SDK with Turbopack. The Sentry SDK is compatible with Turbopack on Next.js version 15.4.1 or later. You are currently on 15.3.1. Please upgrade to a newer Next.js version to use the Sentry SDK with Turbopack.
+[@sentry/nextjs] WARNING: You are using the Sentry SDK with Turbopack. The Sentry SDK is compatible with Turbopack on Next.js version 15.4.1 or later. You are currently on 15.3.1. Please upgrade to a newer Next.js version to use the Sentry SDK with Turbopack.
+ ✓ Compiled successfully in 67s
+   Skipping linting
+   Checking validity of types ...
+Failed to compile.
+
+./app/insurance-use-case/page.tsx:67:11
+Type error: Type '{ title: string; subtitle: string; description: string; image: string; imageAlt: string; }' is not assignable to type 'IntrinsicAttributes & UseCaseDetailedInformationProps'.
+  Property 'image' does not exist on type 'IntrinsicAttributes & UseCaseDetailedInformationProps'.
+
+[0m [90m 65 |[39m           subtitle[33m=[39m[32m"Real-time multimodal verification for claims, onboarding and underwriting"[39m[0m
+[0m [90m 66 |[39m           description[33m=[39m[32m"Prevent fraudulent payouts caused by deepfakes, synthetic identities and manipulated documents. DeepTrack integrates into claims pipelines via API or dashboard, providing instant authenticity reports and confidence scores."[39m[0m
+[0m[31m[1m>[22m[39m[90m 67 |[39m           image[33m=[39m[32m"/images/insurance/insurance1.jpg"[39m[0m
+[0m [90m    |[39m           [31m[1m^[22m[39m[0m
+[0m [90m 68 |[39m           imageAlt[33m=[39m[32m"Example of insurance claims verification interface"[39m[0m
+[0m [90m 69 |[39m         [33m/[39m[33m>[39m[0m
+[0m [90m 70 |[39m[0m
+Next.js build worker exited with code: 1 and signal: null
+
+===== TypeScript check (tsc --noEmit) =====
+app/insurance-use-case/page.tsx(67,11): error TS2322: Type '{ title: string; subtitle: string; description: string; image: string; imageAlt: string; }' is not assignable to type 'IntrinsicAttributes & UseCaseDetailedInformationProps'.
+  Property 'image' does not exist on type 'IntrinsicAttributes & UseCaseDetailedInformationProps'.
+app/insurance-use-case/page.tsx(94,11): error TS2322: Type '{ features: { title: string; description: string; }[]; title: string; description: string; imageSrc: string; imageAlt: string; }' is not assignable to type 'IntrinsicAttributes & FeatureInformationProps'.
+  Property 'imageSrc' does not exist on type 'IntrinsicAttributes & FeatureInformationProps'.
+
+===== ESLint =====
+
+Oops! Something went wrong! :(
+
+ESLint: 9.25.1
+
+ESLint couldn't find an eslint.config.(js|mjs|cjs) file.
+
+From ESLint v9.0.0, the default configuration file is now eslint.config.js.
+If you are using a .eslintrc.* file, please follow the migration guide
+to update your configuration file to the new format:
+
+https://eslint.org/docs/latest/use/configure/migration-guide
+
+If you still have problems after following the migration guide, please stop by
+https://eslint.org/chat/help to chat with the team.
+
+
+===== Tests (npm test if present) =====
